@@ -1,6 +1,13 @@
 import pool from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function DELETE(request, ctx) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await ctx.params;
   const releaseId = Number(id);
 
@@ -9,8 +16,8 @@ export async function DELETE(request, ctx) {
   }
 
   const result = await pool.query(
-    "DELETE FROM collection WHERE id = $1",
-    [releaseId]
+    "DELETE FROM collection WHERE id = $1 AND user_id = $2",
+    [releaseId, user.id]
   );
 
   if (result.rowCount === 0) {
@@ -21,6 +28,12 @@ export async function DELETE(request, ctx) {
 }
 
 export async function PATCH(request, ctx) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await ctx.params;
   const releaseId = Number(id);
 
@@ -44,9 +57,9 @@ export async function PATCH(request, ctx) {
   const result = await pool.query(
     `UPDATE collection
      SET artist = $1, title = $2, format = $3, updated_at = NOW()
-     WHERE id = $4
+     WHERE id = $4 AND user_id = $5
      RETURNING *`,
-    [artist, title, format, releaseId]
+    [artist, title, format, releaseId, user.id]
   );
 
   if (result.rowCount === 0) {

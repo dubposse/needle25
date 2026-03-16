@@ -1,14 +1,31 @@
 import pool from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function GET() {
-  const result = await pool.query("SELECT * FROM collection ORDER BY id DESC");
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const result = await pool.query(
+    "SELECT * FROM collection WHERE user_id = $1 ORDER BY id DESC",
+    [user.id]
+  );
+
   return Response.json(result.rows);
 }
 
 export async function POST(request) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = await request.json();
 
-  const artist = body.artist?.trim(); 
+  const artist = body.artist?.trim();
   const title = body.title?.trim();
   const format = body.format?.trim();
 
@@ -20,10 +37,10 @@ export async function POST(request) {
   }
 
   const result = await pool.query(
-    `INSERT INTO collection (artist, title, format)
-     VALUES ($1, $2, $3)
+    `INSERT INTO collection (artist, title, format, user_id)
+     VALUES ($1, $2, $3, $4)
      RETURNING *`,
-    [artist, title, format]
+    [artist, title, format, user.id]
   );
 
   return Response.json(result.rows[0], { status: 201 });
