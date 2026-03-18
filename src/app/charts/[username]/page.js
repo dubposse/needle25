@@ -1,6 +1,6 @@
 const CATEGORY_LABELS = {
-  alltime: "Alltime Favorites",
-  current: "Current Favourites",
+  alltime: "All-time favorites",
+  current: "Current favorites",
   recommendation: "Recommendations",
 };
 
@@ -12,10 +12,73 @@ function groupChartsByCategory(charts) {
   };
 }
 
+function ChartItem({ item }) {
+  return (
+    <li
+      style={{
+        padding: "12px 0",
+        borderBottom: "1px solid #222",
+      }}
+    >
+      <div style={{ fontSize: 16, fontWeight: 500 }}>
+        {item.artist}
+      </div>
+
+      <div
+        style={{
+          fontSize: 14,
+          color: "#aaa",
+        }}
+      >
+        {item.title}
+      </div>
+
+      {item.comment ? (
+        <div
+          style={{
+            marginTop: 6,
+            fontSize: 13,
+            color: "#666",
+          }}
+        >
+          {item.comment}
+        </div>
+      ) : null}
+    </li>
+  );
+}
+
+function CategorySection({ title, items }) {
+  return (
+    <section style={{ marginTop: 50 }}>
+      <h3
+        style={{
+          fontSize: 18,
+          fontWeight: 600,
+          marginBottom: 16,
+        }}
+      >
+        {title}
+      </h3>
+
+      {items.length === 0 ? (
+        <p style={{ color: "#666" }}>No entries yet.</p>
+      ) : (
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {items.map((item) => (
+            <ChartItem key={item.id} item={item} />
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 export default async function PublicChartsPage({ params }) {
   const { username } = await params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   const res = await fetch(`${baseUrl}/api/charts/public/${username}`, {
     cache: "no-store",
@@ -25,10 +88,11 @@ export default async function PublicChartsPage({ params }) {
 
   if (!res.ok) {
     return (
-      <main style={{ padding: 20, maxWidth: 800 }}>
-        <h1>Needle25</h1>
-        <h2>Public Charts</h2>
-        <p>{data.error || "Could not load public charts."}</p>
+      <main style={{ padding: 30, maxWidth: 700 }}>
+        <h1 style={{ color: "#fff" }}>Needle25</h1>
+        <p style={{ color: "#888" }}>
+          {data.error || "Could not load public charts."}
+        </p>
       </main>
     );
   }
@@ -36,79 +100,57 @@ export default async function PublicChartsPage({ params }) {
   const grouped = groupChartsByCategory(data.charts);
 
   return (
-    <main style={{ padding: 20, maxWidth: 800 }}>
-      <h1>Needle25</h1>
-      <h2>Public Charts</h2>
+    <main
+      style={{
+        background: "#0b0b0b",
+        minHeight: "100vh",
+        color: "#fff",
+        padding: 30,
+      }}
+    >
+      <div style={{ maxWidth: 700, margin: "0 auto" }}>
+        <h1
+          style={{
+            fontSize: 28,
+            fontWeight: 700,
+            marginBottom: 10,
+          }}
+        >
+          Needle25
+        </h1>
 
-      <p>
-        Charts by <strong>{data.user.username}</strong>
-      </p>
+        <p
+          style={{
+            color: "#888",
+            marginBottom: 30,
+          }}
+        >
+          Charts by <strong>{data.user.username}</strong>
+        </p>
 
-      {data.charts.length === 0 ? (
-        <p>No public chart entries yet.</p>
-      ) : (
-        <>
-          <section style={{ marginTop: 30 }}>
-            <h3>{CATEGORY_LABELS.alltime}</h3>
-            {grouped.alltime.length === 0 ? (
-              <p>No entries yet.</p>
-            ) : (
-              <ul>
-                {grouped.alltime.map((item) => (
-                  <li key={item.id} style={{ marginBottom: 16 }}>
-                    <div>
-                      <strong>{item.artist}</strong> – {item.title}
-                    </div>
-                    {item.comment ? (
-                      <p style={{ margin: "6px 0" }}>{item.comment}</p>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+        {data.charts.length === 0 ? (
+          <p style={{ color: "#666" }}>
+            No public chart entries yet.
+          </p>
+        ) : (
+          <>
+            <CategorySection
+              title={CATEGORY_LABELS.alltime}
+              items={grouped.alltime}
+            />
 
-          <section style={{ marginTop: 30 }}>
-            <h3>{CATEGORY_LABELS.current}</h3>
-            {grouped.current.length === 0 ? (
-              <p>No entries yet.</p>
-            ) : (
-              <ul>
-                {grouped.current.map((item) => (
-                  <li key={item.id} style={{ marginBottom: 16 }}>
-                    <div>
-                      <strong>{item.artist}</strong> – {item.title}
-                    </div>
-                    {item.comment ? (
-                      <p style={{ margin: "6px 0" }}>{item.comment}</p>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+            <CategorySection
+              title={CATEGORY_LABELS.current}
+              items={grouped.current}
+            />
 
-          <section style={{ marginTop: 30 }}>
-            <h3>{CATEGORY_LABELS.recommendation}</h3>
-            {grouped.recommendation.length === 0 ? (
-              <p>No entries yet.</p>
-            ) : (
-              <ul>
-                {grouped.recommendation.map((item) => (
-                  <li key={item.id} style={{ marginBottom: 16 }}>
-                    <div>
-                      <strong>{item.artist}</strong> – {item.title}
-                    </div>
-                    {item.comment ? (
-                      <p style={{ margin: "6px 0" }}>{item.comment}</p>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </>
-      )}
+            <CategorySection
+              title={CATEGORY_LABELS.recommendation}
+              items={grouped.recommendation}
+            />
+          </>
+        )}
+      </div>
     </main>
   );
 }

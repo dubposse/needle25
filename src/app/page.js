@@ -3,10 +3,55 @@
 import { useEffect, useState } from "react";
 
 const CATEGORY_LABELS = {
-  alltime: "Alltime Favorites",
-  current: "Current Favourites",
+  alltime: "All-time favorites",
+  current: "Current favorites",
   recommendation: "Recommendations",
 };
+
+function Modal({ title, children, onClose }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0, 0, 0, 0.7)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 20,
+        zIndex: 1000,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%",
+          maxWidth: 520,
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #2a2a2a",
+          borderRadius: 12,
+          padding: 20,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 16,
+          }}
+        >
+          <h3 style={{ margin: 0 }}>{title}</h3>
+          <button onClick={onClose}>Close</button>
+        </div>
+
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -28,21 +73,9 @@ export default function Home() {
   const [chartCategory, setChartCategory] = useState("alltime");
   const [chartComment, setChartComment] = useState("");
 
-  const [editingId, setEditingId] = useState(null);
-  const [editingArtist, setEditingArtist] = useState("");
-  const [editingTitle, setEditingTitle] = useState("");
-  const [editingFormat, setEditingFormat] = useState("");
-
-  const [editingWishlistId, setEditingWishlistId] = useState(null);
-  const [editingWishlistArtist, setEditingWishlistArtist] = useState("");
-  const [editingWishlistTitle, setEditingWishlistTitle] = useState("");
-  const [editingWishlistFormat, setEditingWishlistFormat] = useState("");
-
-  const [editingChartId, setEditingChartId] = useState(null);
-  const [editingChartArtist, setEditingChartArtist] = useState("");
-  const [editingChartTitle, setEditingChartTitle] = useState("");
-  const [editingChartCategory, setEditingChartCategory] = useState("alltime");
-  const [editingChartComment, setEditingChartComment] = useState("");
+  const [editingCollectionItem, setEditingCollectionItem] = useState(null);
+  const [editingWishlistItem, setEditingWishlistItem] = useState(null);
+  const [editingChartItem, setEditingChartItem] = useState(null);
 
   const [artistFilter, setArtistFilter] = useState("");
   const [formatFilter, setFormatFilter] = useState("");
@@ -218,6 +251,9 @@ export default function Home() {
     setCollection([]);
     setWishlist([]);
     setCharts([]);
+    setEditingCollectionItem(null);
+    setEditingWishlistItem(null);
+    setEditingChartItem(null);
     setMessage("Logged out");
   }
 
@@ -352,6 +388,7 @@ export default function Home() {
       return;
     }
 
+    setEditingCollectionItem(null);
     setMessage("Release deleted");
     loadCollection();
   }
@@ -370,6 +407,7 @@ export default function Home() {
       return;
     }
 
+    setEditingWishlistItem(null);
     setMessage("Wishlist item deleted");
     loadWishlist();
   }
@@ -388,48 +426,46 @@ export default function Home() {
       return;
     }
 
+    setEditingChartItem(null);
     setMessage("Chart entry deleted");
     loadCharts();
   }
 
-  function startEdit(item) {
-    setEditingId(item.id);
-    setEditingArtist(item.artist);
-    setEditingTitle(item.title);
-    setEditingFormat(item.format);
+  function openCollectionModal(item) {
+    setEditingCollectionItem({
+      id: item.id,
+      artist: item.artist,
+      title: item.title,
+      format: item.format,
+    });
   }
 
-  function cancelEdit() {
-    setEditingId(null);
-    setEditingArtist("");
-    setEditingTitle("");
-    setEditingFormat("");
+  function closeCollectionModal() {
+    setEditingCollectionItem(null);
   }
 
-  async function saveEdit(id) {
+  async function saveCollectionModal() {
     setMessage("");
 
-    const updatedRelease = {
-      artist: editingArtist.trim(),
-      title: editingTitle.trim(),
-      format: editingFormat.trim(),
-    };
-
     if (
-      !updatedRelease.artist ||
-      !updatedRelease.title ||
-      !updatedRelease.format
+      !editingCollectionItem.artist.trim() ||
+      !editingCollectionItem.title.trim() ||
+      !editingCollectionItem.format.trim()
     ) {
       setMessage("Artist, title and format are required");
       return;
     }
 
-    const res = await fetch(`/api/collection/${id}`, {
+    const res = await fetch(`/api/collection/${editingCollectionItem.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedRelease),
+      body: JSON.stringify({
+        artist: editingCollectionItem.artist.trim(),
+        title: editingCollectionItem.title.trim(),
+        format: editingCollectionItem.format.trim(),
+      }),
     });
 
     const data = await res.json();
@@ -439,45 +475,46 @@ export default function Home() {
       return;
     }
 
-    cancelEdit();
+    closeCollectionModal();
     setMessage("Release updated");
     loadCollection();
   }
 
-  function startWishlistEdit(item) {
-    setEditingWishlistId(item.id);
-    setEditingWishlistArtist(item.artist);
-    setEditingWishlistTitle(item.title);
-    setEditingWishlistFormat(item.format);
+  function openWishlistModal(item) {
+    setEditingWishlistItem({
+      id: item.id,
+      artist: item.artist,
+      title: item.title,
+      format: item.format,
+    });
   }
 
-  function cancelWishlistEdit() {
-    setEditingWishlistId(null);
-    setEditingWishlistArtist("");
-    setEditingWishlistTitle("");
-    setEditingWishlistFormat("");
+  function closeWishlistModal() {
+    setEditingWishlistItem(null);
   }
 
-  async function saveWishlistEdit(id) {
+  async function saveWishlistModal() {
     setMessage("");
 
-    const updatedItem = {
-      artist: editingWishlistArtist.trim(),
-      title: editingWishlistTitle.trim(),
-      format: editingWishlistFormat.trim(),
-    };
-
-    if (!updatedItem.artist || !updatedItem.title || !updatedItem.format) {
+    if (
+      !editingWishlistItem.artist.trim() ||
+      !editingWishlistItem.title.trim() ||
+      !editingWishlistItem.format.trim()
+    ) {
       setMessage("Artist, title and format are required");
       return;
     }
 
-    const res = await fetch(`/api/wishlist/${id}`, {
+    const res = await fetch(`/api/wishlist/${editingWishlistItem.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedItem),
+      body: JSON.stringify({
+        artist: editingWishlistItem.artist.trim(),
+        title: editingWishlistItem.title.trim(),
+        format: editingWishlistItem.format.trim(),
+      }),
     });
 
     const data = await res.json();
@@ -487,48 +524,48 @@ export default function Home() {
       return;
     }
 
-    cancelWishlistEdit();
+    closeWishlistModal();
     setMessage("Wishlist item updated");
     loadWishlist();
   }
 
-  function startChartEdit(item) {
-    setEditingChartId(item.id);
-    setEditingChartArtist(item.artist);
-    setEditingChartTitle(item.title);
-    setEditingChartCategory(item.category || "alltime");
-    setEditingChartComment(item.comment || "");
+  function openChartModal(item) {
+    setEditingChartItem({
+      id: item.id,
+      artist: item.artist,
+      title: item.title,
+      category: item.category || "alltime",
+      comment: item.comment || "",
+    });
   }
 
-  function cancelChartEdit() {
-    setEditingChartId(null);
-    setEditingChartArtist("");
-    setEditingChartTitle("");
-    setEditingChartCategory("alltime");
-    setEditingChartComment("");
+  function closeChartModal() {
+    setEditingChartItem(null);
   }
 
-  async function saveChartEdit(id) {
+  async function saveChartModal() {
     setMessage("");
 
-    const updatedItem = {
-      artist: editingChartArtist.trim(),
-      title: editingChartTitle.trim(),
-      category: editingChartCategory,
-      comment: editingChartComment.trim(),
-    };
-
-    if (!updatedItem.artist || !updatedItem.title || !updatedItem.category) {
+    if (
+      !editingChartItem.artist.trim() ||
+      !editingChartItem.title.trim() ||
+      !editingChartItem.category
+    ) {
       setMessage("Artist, title and category are required");
       return;
     }
 
-    const res = await fetch(`/api/charts/${id}`, {
+    const res = await fetch(`/api/charts/${editingChartItem.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedItem),
+      body: JSON.stringify({
+        artist: editingChartItem.artist.trim(),
+        title: editingChartItem.title.trim(),
+        category: editingChartItem.category,
+        comment: editingChartItem.comment.trim(),
+      }),
     });
 
     const data = await res.json();
@@ -538,7 +575,7 @@ export default function Home() {
       return;
     }
 
-    cancelChartEdit();
+    closeChartModal();
     setMessage("Chart entry updated");
     loadCharts();
   }
@@ -688,47 +725,27 @@ export default function Home() {
           {collection.length === 0 ? (
             <p>No releases yet.</p>
           ) : (
-            <ul>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {collection.map((item) => (
-                <li key={item.id} style={{ marginBottom: 12 }}>
-                  {editingId === item.id ? (
-                    <div>
-                      <div style={{ marginBottom: 6 }}>
-                        <input
-                          value={editingArtist}
-                          onChange={(e) => setEditingArtist(e.target.value)}
-                          placeholder="Artist"
-                        />
-                      </div>
-
-                      <div style={{ marginBottom: 6 }}>
-                        <input
-                          value={editingTitle}
-                          onChange={(e) => setEditingTitle(e.target.value)}
-                          placeholder="Title"
-                        />
-                      </div>
-
-                      <div style={{ marginBottom: 6 }}>
-                        <input
-                          value={editingFormat}
-                          onChange={(e) => setEditingFormat(e.target.value)}
-                          placeholder="Format"
-                        />
-                      </div>
-
-                      <button onClick={() => saveEdit(item.id)}>💾 Save</button>
-                      <button onClick={cancelEdit} style={{ marginLeft: 8 }}>
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <strong>{item.artist}</strong> – {item.title} ({item.format}){" "}
-                      <button onClick={() => startEdit(item)}>✏️</button>
-                      <button onClick={() => deleteRelease(item.id)}>❌</button>
-                    </div>
-                  )}
+                <li
+                  key={item.id}
+                  onClick={() => openCollectionModal(item)}
+                  style={{
+                    padding: "10px 0",
+                    borderBottom: "1px solid #222",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ fontSize: 15, fontWeight: 600 }}>{item.artist}</div>
+                  <div
+                    style={{
+                      marginTop: 2,
+                      fontSize: 14,
+                      color: "#aaa",
+                    }}
+                  >
+                    {item.title} · {item.format}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -769,47 +786,27 @@ export default function Home() {
           {wishlist.length === 0 ? (
             <p>No wishlist items yet.</p>
           ) : (
-            <ul>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {wishlist.map((item) => (
-                <li key={item.id} style={{ marginBottom: 12 }}>
-                  {editingWishlistId === item.id ? (
-                    <div>
-                      <div style={{ marginBottom: 6 }}>
-                        <input
-                          value={editingWishlistArtist}
-                          onChange={(e) => setEditingWishlistArtist(e.target.value)}
-                          placeholder="Artist"
-                        />
-                      </div>
-
-                      <div style={{ marginBottom: 6 }}>
-                        <input
-                          value={editingWishlistTitle}
-                          onChange={(e) => setEditingWishlistTitle(e.target.value)}
-                          placeholder="Title"
-                        />
-                      </div>
-
-                      <div style={{ marginBottom: 6 }}>
-                        <input
-                          value={editingWishlistFormat}
-                          onChange={(e) => setEditingWishlistFormat(e.target.value)}
-                          placeholder="Format"
-                        />
-                      </div>
-
-                      <button onClick={() => saveWishlistEdit(item.id)}>💾 Save</button>
-                      <button onClick={cancelWishlistEdit} style={{ marginLeft: 8 }}>
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <strong>{item.artist}</strong> – {item.title} ({item.format}){" "}
-                      <button onClick={() => startWishlistEdit(item)}>✏️</button>
-                      <button onClick={() => deleteWishlistItem(item.id)}>❌</button>
-                    </div>
-                  )}
+                <li
+                  key={item.id}
+                  onClick={() => openWishlistModal(item)}
+                  style={{
+                    padding: "10px 0",
+                    borderBottom: "1px solid #222",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ fontSize: 15, fontWeight: 600 }}>{item.artist}</div>
+                  <div
+                    style={{
+                      marginTop: 2,
+                      fontSize: 14,
+                      color: "#aaa",
+                    }}
+                  >
+                    {item.title} · {item.format}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -841,8 +838,8 @@ export default function Home() {
                 value={chartCategory}
                 onChange={(e) => setChartCategory(e.target.value)}
               >
-                <option value="alltime">Alltime Favorites</option>
-                <option value="current">Current Favourites</option>
+                <option value="alltime">All-time favorites</option>
+                <option value="current">Current favorites</option>
                 <option value="recommendation">Recommendations</option>
               </select>
             </div>
@@ -863,80 +860,222 @@ export default function Home() {
           {charts.length === 0 ? (
             <p>No chart entries yet.</p>
           ) : (
-            <ul>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {charts.map((item) => (
-                <li key={item.id} style={{ marginBottom: 16 }}>
-                  {editingChartId === item.id ? (
-                    <div>
-                      <div style={{ marginBottom: 6 }}>
-                        <input
-                          value={editingChartArtist}
-                          onChange={(e) => setEditingChartArtist(e.target.value)}
-                          placeholder="Artist"
-                        />
-                      </div>
-
-                      <div style={{ marginBottom: 6 }}>
-                        <input
-                          value={editingChartTitle}
-                          onChange={(e) => setEditingChartTitle(e.target.value)}
-                          placeholder="Title"
-                        />
-                      </div>
-
-                      <div style={{ marginBottom: 6 }}>
-                        <select
-                          value={editingChartCategory}
-                          onChange={(e) => setEditingChartCategory(e.target.value)}
-                        >
-                          <option value="alltime">Alltime Favorites</option>
-                          <option value="current">Current Favourites</option>
-                          <option value="recommendation">Recommendations</option>
-                        </select>
-                      </div>
-
-                      <div style={{ marginBottom: 6 }}>
-                        <textarea
-                          value={editingChartComment}
-                          onChange={(e) => setEditingChartComment(e.target.value)}
-                          placeholder="Comment (optional)"
-                          rows={4}
-                          style={{ width: "100%" }}
-                        />
-                      </div>
-
-                      <button onClick={() => saveChartEdit(item.id)}>💾 Save</button>
-                      <button onClick={cancelChartEdit} style={{ marginLeft: 8 }}>
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <div>
-                        <strong>{item.artist}</strong> – {item.title}
-                      </div>
-
-                      <div style={{ fontSize: 14, marginTop: 4 }}>
-                        Category:{" "}
-                        <strong>
-                          {CATEGORY_LABELS[item.category] || item.category}
-                        </strong>
-                      </div>
-
-                      {item.comment ? (
-                        <p style={{ margin: "6px 0" }}>{item.comment}</p>
-                      ) : null}
-
-                      <button onClick={() => startChartEdit(item)}>✏️</button>
-                      <button onClick={() => deleteChartItem(item.id)}>❌</button>
-                    </div>
-                  )}
+                <li
+                  key={item.id}
+                  onClick={() => openChartModal(item)}
+                  style={{
+                    padding: "10px 0",
+                    borderBottom: "1px solid #222",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ fontSize: 15, fontWeight: 600 }}>{item.artist}</div>
+                  <div
+                    style={{
+                      marginTop: 2,
+                      fontSize: 14,
+                      color: "#aaa",
+                    }}
+                  >
+                    {item.title}
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 2,
+                      fontSize: 13,
+                      color: "#777",
+                    }}
+                  >
+                    {CATEGORY_LABELS[item.category] || item.category}
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </>
       )}
+
+      {editingCollectionItem ? (
+        <Modal title="Edit collection item" onClose={closeCollectionModal}>
+          <div style={{ marginBottom: 10 }}>
+            <input
+              value={editingCollectionItem.artist}
+              onChange={(e) =>
+                setEditingCollectionItem({
+                  ...editingCollectionItem,
+                  artist: e.target.value,
+                })
+              }
+              placeholder="Artist"
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <input
+              value={editingCollectionItem.title}
+              onChange={(e) =>
+                setEditingCollectionItem({
+                  ...editingCollectionItem,
+                  title: e.target.value,
+                })
+              }
+              placeholder="Title"
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 14 }}>
+            <input
+              value={editingCollectionItem.format}
+              onChange={(e) =>
+                setEditingCollectionItem({
+                  ...editingCollectionItem,
+                  format: e.target.value,
+                })
+              }
+              placeholder="Format"
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={saveCollectionModal}>Save</button>
+            <button onClick={() => deleteRelease(editingCollectionItem.id)}>
+              Delete
+            </button>
+            <button onClick={closeCollectionModal}>Cancel</button>
+          </div>
+        </Modal>
+      ) : null}
+
+      {editingWishlistItem ? (
+        <Modal title="Edit wishlist item" onClose={closeWishlistModal}>
+          <div style={{ marginBottom: 10 }}>
+            <input
+              value={editingWishlistItem.artist}
+              onChange={(e) =>
+                setEditingWishlistItem({
+                  ...editingWishlistItem,
+                  artist: e.target.value,
+                })
+              }
+              placeholder="Artist"
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <input
+              value={editingWishlistItem.title}
+              onChange={(e) =>
+                setEditingWishlistItem({
+                  ...editingWishlistItem,
+                  title: e.target.value,
+                })
+              }
+              placeholder="Title"
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 14 }}>
+            <input
+              value={editingWishlistItem.format}
+              onChange={(e) =>
+                setEditingWishlistItem({
+                  ...editingWishlistItem,
+                  format: e.target.value,
+                })
+              }
+              placeholder="Format"
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={saveWishlistModal}>Save</button>
+            <button onClick={() => deleteWishlistItem(editingWishlistItem.id)}>
+              Delete
+            </button>
+            <button onClick={closeWishlistModal}>Cancel</button>
+          </div>
+        </Modal>
+      ) : null}
+
+      {editingChartItem ? (
+        <Modal title="Edit chart entry" onClose={closeChartModal}>
+          <div style={{ marginBottom: 10 }}>
+            <input
+              value={editingChartItem.artist}
+              onChange={(e) =>
+                setEditingChartItem({
+                  ...editingChartItem,
+                  artist: e.target.value,
+                })
+              }
+              placeholder="Artist"
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <input
+              value={editingChartItem.title}
+              onChange={(e) =>
+                setEditingChartItem({
+                  ...editingChartItem,
+                  title: e.target.value,
+                })
+              }
+              placeholder="Title"
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <select
+              value={editingChartItem.category}
+              onChange={(e) =>
+                setEditingChartItem({
+                  ...editingChartItem,
+                  category: e.target.value,
+                })
+              }
+              style={{ width: "100%", padding: 8 }}
+            >
+              <option value="alltime">All-time favorites</option>
+              <option value="current">Current favorites</option>
+              <option value="recommendation">Recommendations</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: 14 }}>
+            <textarea
+              value={editingChartItem.comment}
+              onChange={(e) =>
+                setEditingChartItem({
+                  ...editingChartItem,
+                  comment: e.target.value,
+                })
+              }
+              placeholder="Comment"
+              rows={4}
+              style={{ width: "100%", padding: 8 }}
+            />
+          </div>
+
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={saveChartModal}>Save</button>
+            <button onClick={() => deleteChartItem(editingChartItem.id)}>
+              Delete
+            </button>
+            <button onClick={closeChartModal}>Cancel</button>
+          </div>
+        </Modal>
+      ) : null}
 
       {message ? <p style={{ marginTop: 20 }}>{message}</p> : null}
     </main>

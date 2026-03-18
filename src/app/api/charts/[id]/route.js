@@ -49,6 +49,11 @@ export async function PATCH(request, ctx) {
   const comment = body.comment?.trim() || "";
 
   const allowedCategories = ["alltime", "current", "recommendation"];
+  const categoryLimits = {
+    alltime: 5,
+    current: 5,
+    recommendation: 15,
+  };
 
   if (!artist || !title || !category) {
     return Response.json(
@@ -59,6 +64,39 @@ export async function PATCH(request, ctx) {
 
   if (!allowedCategories.includes(category)) {
     return Response.json({ error: "Invalid category" }, { status: 400 });
+  }
+
+  // Bestehenden Eintrag laden
+  const existingResult = await pool.query(
+    "SELECT id, category FROM charts WHERE id = $1 AND user_id = $2",
+    [chartId, user.id]
+  );
+
+  if (existingResult.rowCount === 0) {
+    return Response.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const existingChart = existingResult.rows[0];
+
+  // Limit nur prüfen, wenn Kategorie geändert wird
+  if (existingChart.category !== category) {
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM charts
+       WHERE user_id = $1 AND category = $2`,
+      [user.id, category]
+    );
+
+    const currentCount = Number(countResult.rows[0].count);
+    const limit = categoryLimits[category];
+
+    if (currentCount >= limit) {
+      return Response.json(
+        {
+          error: `Limit reached: max ${limit} entries allowed for this category`,
+        },
+        { status: 400 }
+      );
+    }
   }
 
   const result = await pool.query(
@@ -72,10 +110,6 @@ export async function PATCH(request, ctx) {
      RETURNING *`,
     [artist, title, category, comment, chartId, user.id]
   );
-
-  if (result.rowCount === 0) {
-    return Response.json({ error: "Not found" }, { status: 404 });
-  }
 
   return Response.json(result.rows[0]);
 }

@@ -43,6 +43,33 @@ export async function POST(request) {
     return Response.json({ error: "Invalid category" }, { status: 400 });
   }
 
+  // 🔥 LIMITS DEFINIEREN
+  const categoryLimits = {
+    alltime: 5,
+    current: 5,
+    recommendation: 15,
+  };
+
+  // 🔥 AKTUELLE ANZAHL PRÜFEN
+  const countResult = await pool.query(
+    `SELECT COUNT(*) FROM charts
+     WHERE user_id = $1 AND category = $2`,
+    [user.id, category]
+  );
+
+  const currentCount = Number(countResult.rows[0].count);
+  const limit = categoryLimits[category];
+
+  if (currentCount >= limit) {
+    return Response.json(
+      {
+        error: `Limit reached: max ${limit} entries allowed for this category`,
+      },
+      { status: 400 }
+    );
+  }
+
+  // 🔥 INSERT
   const result = await pool.query(
     `INSERT INTO charts (artist, title, category, comment, is_public, user_id)
      VALUES ($1, $2, $3, $4, $5, $6)
