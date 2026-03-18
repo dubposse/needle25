@@ -17,7 +17,7 @@ export async function POST(request) {
   }
 
   const result = await pool.query(
-    "SELECT id, email, password_hash FROM users WHERE email = $1",
+    "SELECT id, email, username, password_hash FROM users WHERE email = $1",
     [email]
   );
 
@@ -40,7 +40,7 @@ export async function POST(request) {
   }
 
   const token = crypto.randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 Tage
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 
   await pool.query(
     `INSERT INTO sessions (user_id, token, expires_at)
@@ -63,6 +63,7 @@ export async function POST(request) {
     user: {
       id: user.id,
       email: user.email,
+      username: user.username,
     },
   });
 }

@@ -10,7 +10,7 @@ export async function GET() {
   }
 
   const result = await pool.query(
-    `SELECT users.id, users.email
+    `SELECT users.id, users.email, users.username
      FROM sessions
      JOIN users ON sessions.user_id = users.id
      WHERE sessions.token = $1

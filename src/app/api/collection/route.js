@@ -1,17 +1,44 @@
 import pool from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(request) {
   const user = await getCurrentUser();
 
   if (!user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const result = await pool.query(
-    "SELECT * FROM collection WHERE user_id = $1 ORDER BY id DESC",
-    [user.id]
-  );
+  const { searchParams } = new URL(request.url);
+
+  const artist = searchParams.get("artist")?.trim() || "";
+  const format = searchParams.get("format")?.trim() || "";
+  const sort = searchParams.get("sort")?.trim() || "newest";
+
+  let query = "SELECT * FROM collection WHERE user_id = $1";
+  const values = [user.id];
+  let paramIndex = 2;
+
+  if (artist) {
+    query += ` AND artist ILIKE $${paramIndex}`;
+    values.push(`%${artist}%`);
+    paramIndex++;
+  }
+
+  if (format) {
+    query += ` AND format = $${paramIndex}`;
+    values.push(format);
+    paramIndex++;
+  }
+
+  if (sort === "oldest") {
+    query += " ORDER BY created_at ASC";
+  } else if (sort === "artist_asc") {
+    query += " ORDER BY artist ASC";
+  } else {
+    query += " ORDER BY created_at DESC";
+  }
+
+  const result = await pool.query(query, values);
 
   return Response.json(result.rows);
 }
