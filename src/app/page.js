@@ -203,13 +203,6 @@ export default function Home() {
             password: password.trim(),
           };
 
-          console.log({
-  email,
-  username,
-  password,
-  favoriteGenre1,
-  favoriteGenre2,
-});
 
     const res = await fetch(endpoint, {
       method: "POST",

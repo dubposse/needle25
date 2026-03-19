@@ -1,35 +1,50 @@
+import pool from "@/lib/db";
+import { notFound } from "next/navigation";
+
 const CATEGORY_LABELS = {
   alltime: "All-time favorites",
   current: "Current favorites",
   recommendation: "Recommendations",
 };
 
-function groupChartsByCategory(charts) {
-  return {
-    alltime: charts.filter((item) => item.category === "alltime"),
-    current: charts.filter((item) => item.category === "current"),
-    recommendation: charts.filter((item) => item.category === "recommendation"),
-  };
-}
-
 export default async function PublicChartsPage({ params }) {
   const { username } = await params;
 
-  const res = await fetch(`/api/charts/public/${username}`, {
-    cache: "no-store",
-  });
+  // 👉 User holen
+  const userResult = await pool.query(
+    "SELECT id, username FROM users WHERE username = $1",
+    [username]
+  );
 
-  if (!res.ok) {
-    return (
-      <main style={{ padding: 30, maxWidth: 700 }}>
-        <h1>Needle25</h1>
-        <p>Could not load public charts.</p>
-      </main>
-    );
+  if (userResult.rowCount === 0) {
+    return notFound();
   }
 
-  const data = await res.json();
-  const grouped = groupChartsByCategory(data.charts || []);
+  const user = userResult.rows[0];
+
+  // 👉 Charts holen
+  const chartsResult = await pool.query(
+    `SELECT id, artist, title, category, comment
+     FROM charts
+     WHERE user_id = $1 AND is_public = true
+     ORDER BY category ASC, id DESC`,
+    [user.id]
+  );
+
+  const charts = chartsResult.rows;
+
+  // 👉 Gruppieren
+  const grouped = {
+    alltime: [],
+    current: [],
+    recommendation: [],
+  };
+
+  for (const item of charts) {
+    if (grouped[item.category]) {
+      grouped[item.category].push(item);
+    }
+  }
 
   return (
     <main
@@ -41,129 +56,57 @@ export default async function PublicChartsPage({ params }) {
       }}
     >
       <div style={{ maxWidth: 700, margin: "0 auto" }}>
-        <h1
-          style={{
-            fontSize: 28,
-            fontWeight: 700,
-            marginBottom: 10,
-          }}
-        >
+        <h1 style={{ fontSize: 28, marginBottom: 10 }}>
           Needle25
         </h1>
 
-        <p
-          style={{
-            color: "#888",
-            marginBottom: 30,
-          }}
-        >
-          Charts by <strong>{data.user.username}</strong>
+        <p style={{ color: "#888", marginBottom: 30 }}>
+          Charts by <strong>{user.username}</strong>
         </p>
 
-        {data.charts.length === 0 ? (
-          <p style={{ color: "#666" }}>No public chart entries yet.</p>
-        ) : (
-          <>
-            <section style={{ marginTop: 50 }}>
-              <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
-                {CATEGORY_LABELS.alltime}
-              </h3>
-              {grouped.alltime.length === 0 ? (
-                <p style={{ color: "#666" }}>No entries yet.</p>
-              ) : (
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  {grouped.alltime.map((item) => (
-                    <li
-                      key={item.id}
-                      style={{
-                        padding: "12px 0",
-                        borderBottom: "1px solid #222",
-                      }}
-                    >
-                      <div style={{ fontSize: 16, fontWeight: 500 }}>
-                        {item.artist}
-                      </div>
-                      <div style={{ fontSize: 14, color: "#aaa" }}>
-                        {item.title}
-                      </div>
-                      {item.comment ? (
-                        <div style={{ marginTop: 6, fontSize: 13, color: "#666" }}>
-                          {item.comment}
-                        </div>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+        {Object.entries(grouped).map(([key, items]) => (
+          <section key={key} style={{ marginBottom: 40 }}>
+            <h2 style={{ fontSize: 18, marginBottom: 12 }}>
+              {CATEGORY_LABELS[key]}
+            </h2>
 
-            <section style={{ marginTop: 50 }}>
-              <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
-                {CATEGORY_LABELS.current}
-              </h3>
-              {grouped.current.length === 0 ? (
-                <p style={{ color: "#666" }}>No entries yet.</p>
-              ) : (
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  {grouped.current.map((item) => (
-                    <li
-                      key={item.id}
-                      style={{
-                        padding: "12px 0",
-                        borderBottom: "1px solid #222",
-                      }}
-                    >
-                      <div style={{ fontSize: 16, fontWeight: 500 }}>
-                        {item.artist}
-                      </div>
-                      <div style={{ fontSize: 14, color: "#aaa" }}>
-                        {item.title}
-                      </div>
-                      {item.comment ? (
-                        <div style={{ marginTop: 6, fontSize: 13, color: "#666" }}>
-                          {item.comment}
-                        </div>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+            {items.length === 0 ? (
+              <p style={{ color: "#666" }}>No entries</p>
+            ) : (
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                {items.map((item) => (
+                  <li
+                    key={item.id}
+                    style={{
+                      padding: "12px 0",
+                      borderBottom: "1px solid #222",
+                    }}
+                  >
+                    <div style={{ fontWeight: 600 }}>
+                      {item.artist}
+                    </div>
 
-            <section style={{ marginTop: 50 }}>
-              <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
-                {CATEGORY_LABELS.recommendation}
-              </h3>
-              {grouped.recommendation.length === 0 ? (
-                <p style={{ color: "#666" }}>No entries yet.</p>
-              ) : (
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  {grouped.recommendation.map((item) => (
-                    <li
-                      key={item.id}
-                      style={{
-                        padding: "12px 0",
-                        borderBottom: "1px solid #222",
-                      }}
-                    >
-                      <div style={{ fontSize: 16, fontWeight: 500 }}>
-                        {item.artist}
+                    <div style={{ color: "#aaa", fontSize: 14 }}>
+                      {item.title}
+                    </div>
+
+                    {item.comment && (
+                      <div
+                        style={{
+                          marginTop: 4,
+                          fontSize: 13,
+                          color: "#777",
+                        }}
+                      >
+                        {item.comment}
                       </div>
-                      <div style={{ fontSize: 14, color: "#aaa" }}>
-                        {item.title}
-                      </div>
-                      {item.comment ? (
-                        <div style={{ marginTop: 6, fontSize: 13, color: "#666" }}>
-                          {item.comment}
-                        </div>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          </>
-        )}
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
       </div>
     </main>
   );
