@@ -17,7 +17,7 @@ export async function POST(request) {
   }
 
   const result = await pool.query(
-    "SELECT id, email, username, password_hash FROM users WHERE email = $1",
+    "SELECT id, email, username, favorite_genre_1, favorite_genre_2, password_hash FROM users WHERE email = $1",
     [email]
   );
 
@@ -64,6 +64,8 @@ export async function POST(request) {
       id: user.id,
       email: user.email,
       username: user.username,
+      favoriteGenre1: user.favorite_genre_1,
+      favoriteGenre2: user.favorite_genre_2,
     },
   });
 }

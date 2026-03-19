@@ -10,13 +10,13 @@ export async function getCurrentUser() {
   }
 
   const result = await pool.query(
-    `SELECT users.id, users.email, users.username
-     FROM sessions
-     JOIN users ON sessions.user_id = users.id
-     WHERE sessions.token = $1
-       AND sessions.expires_at > NOW()`,
-    [sessionToken]
-  );
+  `SELECT users.id, users.email, users.username, users.favorite_genre_1, users.favorite_genre_2
+   FROM sessions
+   JOIN users ON sessions.user_id = users.id
+   WHERE sessions.token = $1
+     AND sessions.expires_at > NOW()`,
+  [sessionToken]
+);
 
   if (result.rowCount === 0) {
     return null;

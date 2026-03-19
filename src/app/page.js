@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { GENRES } from "@/lib/genres";
 
 const CATEGORY_LABELS = {
   alltime: "All-time favorites",
@@ -86,6 +87,9 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [authMode, setAuthMode] = useState("login");
   const [message, setMessage] = useState("");
+
+  const [favoriteGenre1, setFavoriteGenre1] = useState("");
+  const [favoriteGenre2, setFavoriteGenre2] = useState("");  
 
   async function loadCurrentUser() {
     const res = await fetch("/api/auth/me");
@@ -191,6 +195,8 @@ export default function Home() {
             email: email.trim(),
             username: username.trim(),
             password: password.trim(),
+            favoriteGenre1,
+            favoriteGenre2,
           }
         : {
             email: email.trim(),
@@ -217,6 +223,8 @@ export default function Home() {
       setAuthMode("login");
       setUsername("");
       setPassword("");
+      setFavoriteGenre1("");
+      setFavoriteGenre2("");
       return;
     }
 
@@ -224,6 +232,8 @@ export default function Home() {
     setEmail("");
     setUsername("");
     setPassword("");
+    setFavoriteGenre1("");
+    setFavoriteGenre2("");
 
     setIsLoadingAuth(true);
     await loadCurrentUser();
@@ -593,6 +603,11 @@ export default function Home() {
     <main style={{ padding: 20, maxWidth: 800 }}>
       <h1>Needle25</h1>
 
+      <div style={{ marginBottom: 20 }}>
+  <a href="/" style={{ marginRight: 15 }}>Home</a>
+  <a href="/discover">Discover</a>
+      </div>
+
       {!user ? (
         <>
           <h2>{authMode === "register" ? "Register" : "Login"}</h2>
@@ -625,6 +640,38 @@ export default function Home() {
                 type="password"
               />
             </div>
+
+            {authMode === "register" ? (
+              <>
+                <div style={{ marginBottom: 10 }}>
+                  <select
+                    value={favoriteGenre1}
+                    onChange={(e) => setFavoriteGenre1(e.target.value)}
+                  >
+                    <option value="">Favorite genre 1</option>
+                    {GENRES.map((genre) => (
+                      <option key={genre} value={genre}>
+                        {genre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div style={{ marginBottom: 10 }}>
+                  <select
+                    value={favoriteGenre2}
+                    onChange={(e) => setFavoriteGenre2(e.target.value)}
+                  >
+                    <option value="">Favorite genre 2</option>
+                    {GENRES.map((genre) => (
+                      <option key={genre} value={genre}>
+                        {genre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            ) : null}
 
             <button type="submit">
               {authMode === "register" ? "Register" : "Login"}

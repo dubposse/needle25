@@ -1,5 +1,6 @@
 import pool from "@/lib/db";
 import bcrypt from "bcrypt";
+import { GENRES } from "@/lib/genres";
 
 export async function POST(request) {
   const body = await request.json();
@@ -7,10 +8,15 @@ export async function POST(request) {
   const email = body.email?.trim().toLowerCase();
   const password = body.password?.trim();
   const username = body.username?.trim().toLowerCase();
+  const favoriteGenre1 = body.favoriteGenre1?.trim().toLowerCase();
+  const favoriteGenre2 = body.favoriteGenre2?.trim().toLowerCase();
 
-  if (!email || !password || !username) {
+  if (!email || !password || !username || !favoriteGenre1 || !favoriteGenre2) {
     return Response.json(
-      { error: "Email, username and password are required" },
+      {
+        error:
+          "Email, username, password and two favorite genres are required",
+      },
       { status: 400 }
     );
   }
@@ -30,6 +36,17 @@ export async function POST(request) {
         error:
           "Username may only contain lowercase letters, numbers, hyphens and underscores",
       },
+      { status: 400 }
+    );
+  }
+
+  if (!GENRES.includes(favoriteGenre1) || !GENRES.includes(favoriteGenre2)) {
+    return Response.json({ error: "Invalid genre selection" }, { status: 400 });
+  }
+
+  if (favoriteGenre1 === favoriteGenre2) {
+    return Response.json(
+      { error: "Please choose two different genres" },
       { status: 400 }
     );
   }
@@ -55,10 +72,16 @@ export async function POST(request) {
   const passwordHash = await bcrypt.hash(password, 10);
 
   const result = await pool.query(
-    `INSERT INTO users (email, username, password_hash)
-     VALUES ($1, $2, $3)
-     RETURNING id, email, username, created_at`,
-    [email, username, passwordHash]
+    `INSERT INTO users (
+      email,
+      username,
+      password_hash,
+      favorite_genre_1,
+      favorite_genre_2
+    )
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id, email, username, favorite_genre_1, favorite_genre_2, created_at`,
+    [email, username, passwordHash, favoriteGenre1, favoriteGenre2]
   );
 
   return Response.json(result.rows[0], { status: 201 });
