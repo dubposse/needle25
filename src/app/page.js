@@ -203,6 +203,14 @@ export default function Home() {
             password: password.trim(),
           };
 
+          console.log({
+  email,
+  username,
+  password,
+  favoriteGenre1,
+  favoriteGenre2,
+});
+
     const res = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -607,9 +615,19 @@ export default function Home() {
   <a href="/" style={{ marginRight: 15 }}>Home</a>
   <a href="/discover">Discover</a>
       </div>
+      
 
       {!user ? (
         <>
+
+        <div style={{ marginBottom: 25 }}>
+  <p style={{ color: "#aaa", lineHeight: 1.6 }}>
+    Organize your music collection, wishlist and personal charts.
+    <br />
+    Discover what others are listening to.
+  </p>
+</div>
+
           <h2>{authMode === "register" ? "Register" : "Login"}</h2>
 
           <form onSubmit={handleAuthSubmit} style={{ marginBottom: 20 }}>
