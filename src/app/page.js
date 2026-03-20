@@ -10,9 +10,14 @@ const CATEGORY_LABELS = {
 };
 
 function Modal({ title, children, onClose, maxWidth = 480 }) {
+  function handleClose() {
+    if (document.activeElement) document.activeElement.blur();
+    onClose();
+  }
+
   return (
     <div
-      onClick={onClose}
+      onClick={handleClose}
       style={{
         position: "fixed",
         inset: 0,
@@ -48,7 +53,7 @@ function Modal({ title, children, onClose, maxWidth = 480 }) {
         >
           <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{title}</h3>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             style={{
               background: "none",
               border: "none",
