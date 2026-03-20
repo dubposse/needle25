@@ -13,9 +13,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Needle25 – Music collection & charts",
+  title: "Needle25",
   description:
-    "Organize your music collection, wishlist and personal charts. Discover charts from other users.",
+    "Needle25 is a simple web app to organize your vinyl, tape and cd collection, manage a wishlist, and share your personal charts.",
+  openGraph: {
+    title: "Needle25",
+    description:
+      "Needle25 is a simple web app to organize your vinyl, tape and cd collection, manage a wishlist, and share your personal charts.",
+    url: "https://needle25.vercel.app/",
+    siteName: "Needle25",
+    images: [
+      {
+        url: "https://needle25.vercel.app/og-image.jpg",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {
