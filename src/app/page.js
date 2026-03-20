@@ -103,6 +103,8 @@ export default function Home() {
   const [artistFilter, setArtistFilter] = useState("");
   const [formatFilter, setFormatFilter] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [showArtistSearch, setShowArtistSearch] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -174,6 +176,28 @@ export default function Home() {
     }
 
     setCharts(Array.isArray(data) ? data : []);
+  }
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    setIsMobile(mq.matches);
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const FORMAT_OPTIONS = ["", "vinyl", "cd", "tape"];
+  const FORMAT_LABELS = { "": "All", vinyl: "Vinyl", cd: "CD", tape: "Tape" };
+  function cycleFormat() {
+    const i = FORMAT_OPTIONS.indexOf(formatFilter);
+    setFormatFilter(FORMAT_OPTIONS[(i + 1) % FORMAT_OPTIONS.length]);
+  }
+
+  const SORT_OPTIONS = ["newest", "oldest", "artist_asc"];
+  const SORT_LABELS = { newest: "New ↓", oldest: "Old ↑", artist_asc: "A–Z" };
+  function cycleSort() {
+    const i = SORT_OPTIONS.indexOf(sortBy);
+    setSortBy(SORT_OPTIONS[(i + 1) % SORT_OPTIONS.length]);
   }
 
   useEffect(() => {
@@ -843,35 +867,87 @@ export default function Home() {
             + Add Release
           </button>
 
-          <div style={{ marginBottom: 20 }}>
-            <h3>Filter & Sort</h3>
+          <div style={{ marginBottom: 20, display: "flex", gap: 16, alignItems: "center" }}>
+            <button
+              onClick={cycleFormat}
+              style={{
+                background: "none",
+                border: "none",
+                color: formatFilter ? "#ccc" : "#888",
+                cursor: "pointer",
+                padding: 0,
+                fontSize: 13,
+                flexShrink: 0,
+                width: 52,
+                textAlign: "left",
+              }}
+            >
+              {FORMAT_LABELS[formatFilter]} ▾
+            </button>
 
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={artistFilter}
-                onChange={(e) => setArtistFilter(e.target.value)}
-                placeholder="Search by artist"
-              />
-            </div>
+            <button
+              onClick={cycleSort}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#888",
+                cursor: "pointer",
+                padding: 0,
+                fontSize: 13,
+                flexShrink: 0,
+                width: 52,
+                textAlign: "left",
+              }}
+            >
+              {SORT_LABELS[sortBy]}
+            </button>
 
-            <div style={{ marginBottom: 10 }}>
-              <select
-                value={formatFilter}
-                onChange={(e) => setFormatFilter(e.target.value)}
+            <div style={{ width: 200, flexShrink: 0, position: "relative", marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ flex: 1, position: "relative" }}>
+                <input
+                  value={artistFilter}
+                  onChange={(e) => setArtistFilter(e.target.value)}
+                  placeholder="Search by artist"
+                  style={{ width: "100%", paddingRight: 28, boxSizing: "border-box" }}
+                />
+                {artistFilter && (
+                  <button
+                    onClick={() => setArtistFilter("")}
+                    style={{
+                      position: "absolute",
+                      right: 8,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      color: "#666",
+                      fontSize: 13,
+                      cursor: "pointer",
+                      padding: 0,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => setShowArtistSearch(true)}
+                title="Open as modal"
+                style={{
+                  background: "none",
+                  border: "1px solid #444",
+                  borderRadius: 5,
+                  color: "#aaa",
+                  cursor: "pointer",
+                  padding: "2px 5px",
+                  fontSize: 14,
+                  flexShrink: 0,
+                  lineHeight: 1,
+                }}
               >
-                <option value="">All formats</option>
-                <option value="vinyl">Vinyl</option>
-                <option value="cd">CD</option>
-                <option value="tape">Tape</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-                <option value="artist_asc">Artist A-Z</option>
-              </select>
+                ⤢
+              </button>
             </div>
           </div>
           </div>
@@ -1006,6 +1082,53 @@ export default function Home() {
           </div>
           )}
         </div>
+      )}
+
+      {showArtistSearch && (
+        <Modal title="Search by artist" onClose={() => setShowArtistSearch(false)}>
+          <div style={{ position: "relative", marginBottom: 14 }}>
+            <input
+              value={artistFilter}
+              onChange={(e) => setArtistFilter(e.target.value)}
+              placeholder="Search by artist..."
+              autoFocus
+              style={{ width: "100%", paddingRight: artistFilter ? 28 : undefined, boxSizing: "border-box" }}
+            />
+            {artistFilter && (
+              <button
+                onClick={() => setArtistFilter("")}
+                style={{
+                  position: "absolute",
+                  right: 8,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  color: "#666",
+                  fontSize: 13,
+                  cursor: "pointer",
+                  padding: 0,
+                  lineHeight: 1,
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setShowArtistSearch(false)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#888",
+              cursor: "pointer",
+              padding: 0,
+              fontSize: 13,
+            }}
+          >
+            Done
+          </button>
+        </Modal>
       )}
 
       {showAddCollection ? (
