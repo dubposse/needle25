@@ -9,7 +9,7 @@ const CATEGORY_LABELS = {
   recommendation: "Recommendations",
 };
 
-function Modal({ title, children, onClose }) {
+function Modal({ title, children, onClose, maxWidth = 480 }) {
   return (
     <div
       onClick={onClose}
@@ -29,7 +29,7 @@ function Modal({ title, children, onClose }) {
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "100%",
-          maxWidth: 480,
+          maxWidth: maxWidth,
           background: "#141414",
           color: "#e8e8e8",
           border: "1px solid #242424",
@@ -1085,13 +1085,12 @@ export default function Home() {
       )}
 
       {showArtistSearch && (
-        <Modal title="Search by artist" onClose={() => setShowArtistSearch(false)}>
+        <Modal title="Search by artist" onClose={() => setShowArtistSearch(false)} maxWidth={320}>
           <div style={{ position: "relative", marginBottom: 14 }}>
             <input
               value={artistFilter}
               onChange={(e) => setArtistFilter(e.target.value)}
               placeholder="Search by artist..."
-              autoFocus
               style={{ width: "100%", paddingRight: artistFilter ? 28 : undefined, boxSizing: "border-box" }}
             />
             {artistFilter && (
