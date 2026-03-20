@@ -16,24 +16,26 @@ function Modal({ title, children, onClose }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0, 0, 0, 0.7)",
+        background: "rgba(0,0,0,0.75)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: 20,
         zIndex: 1000,
+        backdropFilter: "blur(4px)",
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "100%",
-          maxWidth: 520,
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #2a2a2a",
-          borderRadius: 12,
-          padding: 20,
+          maxWidth: 480,
+          background: "#141414",
+          color: "#e8e8e8",
+          border: "1px solid #242424",
+          borderRadius: 14,
+          padding: "24px 24px 20px",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
         }}
       >
         <div
@@ -41,11 +43,24 @@ function Modal({ title, children, onClose }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: 16,
+            marginBottom: 20,
           }}
         >
-          <h3 style={{ margin: 0 }}>{title}</h3>
-          <button onClick={onClose}>Close</button>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{title}</h3>
+          <button
+            onClick={onClose}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#666",
+              fontSize: 20,
+              lineHeight: 1,
+              cursor: "pointer",
+              padding: "0 2px",
+            }}
+          >
+            ✕
+          </button>
         </div>
 
         {children}
@@ -77,6 +92,13 @@ export default function Home() {
   const [editingCollectionItem, setEditingCollectionItem] = useState(null);
   const [editingWishlistItem, setEditingWishlistItem] = useState(null);
   const [editingChartItem, setEditingChartItem] = useState(null);
+
+  const [activeSection, setActiveSection] = useState("collection");
+
+  const [showAddCollection, setShowAddCollection] = useState(false);
+  const [showAddWishlist, setShowAddWishlist] = useState(false);
+  const [showAddCharts, setShowAddCharts] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   const [artistFilter, setArtistFilter] = useState("");
   const [formatFilter, setFormatFilter] = useState("");
@@ -302,6 +324,7 @@ export default function Home() {
     setTitle("");
     setFormat("");
     setMessage("Release added");
+    setShowAddCollection(false);
     loadCollection();
   }
 
@@ -343,6 +366,7 @@ export default function Home() {
     setWishlistTitle("");
     setWishlistFormat("");
     setMessage("Wishlist item added");
+    setShowAddWishlist(false);
     loadWishlist();
   }
 
@@ -382,6 +406,7 @@ export default function Home() {
     setChartCategory("alltime");
     setChartComment("");
     setMessage("Chart entry added");
+    setShowAddCharts(false);
     loadCharts();
   }
 
@@ -601,152 +626,222 @@ export default function Home() {
   }
 
   return (
-    <main style={{ padding: 20, maxWidth: 800 }}>
-      <h1>Needle25</h1>
-
-      <div style={{ marginBottom: 20 }}>
-  <a href="/" style={{ marginRight: 15 }}>Home</a>
-  <a href="/discover">Discover</a>
+    <main style={{ padding: "0 24px", maxWidth: 680, margin: "0 auto", height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", boxSizing: "border-box" }}>
+      <div style={{ flexShrink: 0, paddingTop: 28, paddingBottom: 16, borderBottom: "1px solid #1e1e1e", marginBottom: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+          <img src="/logo.png" alt="Needle25" style={{ height: 42, width: "auto" }} />
+          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.5px", margin: 0 }}>&ensp;Needle25</h1>
+        </div>
+        <div style={{ display: "flex", gap: 20, fontSize: 14, color: "#666" }}>
+          <a href="/" style={{ color: "#666" }}>Home</a>
+          <a href="/discover" style={{ color: "#666" }}>Discover</a>
+        </div>
       </div>
       
 
       {!user ? (
-        <>
+        <div style={{ flex: 1, overflowY: "auto", paddingBottom: 32 }}>
 
-        <div style={{ marginBottom: 25 }}>
-  <p style={{ color: "#aaa", lineHeight: 1.6 }}>
-    Organize your music collection, wishlist and personal charts.
-    <br />
-    Discover what others are listening to.
-  </p>
-</div>
+        <div style={{ marginBottom: 32 }}>
+          <p style={{ color: "#555", fontSize: 14, lineHeight: 1.7, margin: "0 0 8px 0" }}>
+            Organize your music collection,<br /> wishlist & personal charts - 
+            <br />
+            discover what others are listening to.
+          </p>
+          <p style={{ color: "#555", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+            All data is private <br />- only your curated charts are public by default
+          </p>
+        </div>
 
-          <h2>{authMode === "register" ? "Register" : "Login"}</h2>
+          <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>{authMode === "register" ? "Register" : "Login"}</h2>
 
-          <form onSubmit={handleAuthSubmit} style={{ marginBottom: 20 }}>
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                type="email"
-              />
-            </div>
+          {authMode === "login" && (
+            <p style={{ marginBottom: 14, fontSize: 12, color: "#444", maxWidth: 320, lineHeight: 1.8 }}>
+              Demo Access <br />Email: test@needle25<br />Password: secret123
+            </p>
+          )}
+
+          <form onSubmit={handleAuthSubmit} style={{ marginBottom: 16, display: "flex", flexDirection: "column", gap: 10, maxWidth: 320 }}>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              type="email"
+            />
 
             {authMode === "register" ? (
-              <div style={{ marginBottom: 10 }}>
-                <input
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Username"
-                />
-              </div>
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username"
+              />
             ) : null}
 
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                type="password"
-              />
-            </div>
+            <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              type="password"
+            />
 
             {authMode === "register" ? (
               <>
-                <div style={{ marginBottom: 10 }}>
-                  <select
-                    value={favoriteGenre1}
-                    onChange={(e) => setFavoriteGenre1(e.target.value)}
-                  >
-                    <option value="">Favorite genre 1</option>
-                    {GENRES.map((genre) => (
-                      <option key={genre} value={genre}>
-                        {genre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <select
+                  value={favoriteGenre1}
+                  onChange={(e) => setFavoriteGenre1(e.target.value)}
+                >
+                  <option value="">Favorite genre 1</option>
+                  {GENRES.map((genre) => (
+                    <option key={genre} value={genre}>{genre}</option>
+                  ))}
+                </select>
 
-                <div style={{ marginBottom: 10 }}>
-                  <select
-                    value={favoriteGenre2}
-                    onChange={(e) => setFavoriteGenre2(e.target.value)}
-                  >
-                    <option value="">Favorite genre 2</option>
-                    {GENRES.map((genre) => (
-                      <option key={genre} value={genre}>
-                        {genre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <select
+                  value={favoriteGenre2}
+                  onChange={(e) => setFavoriteGenre2(e.target.value)}
+                >
+                  <option value="">Favorite genre 2</option>
+                  {GENRES.map((genre) => (
+                    <option key={genre} value={genre}>{genre}</option>
+                  ))}
+                </select>
               </>
             ) : null}
 
-            <button type="submit">
+            <button
+              type="submit"
+              style={{
+                marginTop: 4,
+                padding: "10px 0",
+                background: "#e8e8e8",
+                color: "#0c0c0c",
+                border: "none",
+                borderRadius: 8,
+                fontWeight: 600,
+                fontSize: 14,
+              }}
+            >
               {authMode === "register" ? "Register" : "Login"}
             </button>
           </form>
 
           <button
-            onClick={() =>
-              setAuthMode(authMode === "login" ? "register" : "login")
-            }
+            onClick={() => setAuthMode(authMode === "login" ? "register" : "login")}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#555",
+              fontSize: 13,
+              padding: 0,
+            }}
           >
             Switch to {authMode === "login" ? "Register" : "Login"}
           </button>
-        </>
+        </div>
       ) : (
-        <>
-          <p>
-            Logged in as <strong>{user.email}</strong>
-          </p>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ flexShrink: 0 }}>
+          {/* Dezente Kopfzeile: Username, Charts-Link, Logout */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              marginBottom: 20,
+              fontSize: 13,
+              color: "#888",
+            }}
+          >
+            <button
+              onClick={() => setShowProfile((v) => !v)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#888",
+                cursor: "pointer",
+                padding: 0,
+                fontSize: 13,
+              }}
+            >
+              {user.username} {showProfile ? "▲" : "▼"}
+            </button>
 
-          <p>
-            Username: <strong>{user.username}</strong>
-          </p>
-
-          <p>
-            Public charts link:{" "}
-            <a href={`/charts/${user.username}`} target="_blank" rel="noreferrer">
-              /charts/{user.username}
+            <a
+              href={`/charts/${user.username}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#888", textDecoration: "none" }}
+            >
+              My Charts ↗
             </a>
-          </p>
 
-          <button onClick={handleLogout} style={{ marginBottom: 20 }}>
-            Logout
-          </button>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#888",
+                cursor: "pointer",
+                padding: 0,
+                fontSize: 13,
+                marginLeft: "auto",
+              }}
+            >
+              Logout
+            </button>
+          </div>
 
+          {/* Aufklappbarer Profil-Bereich */}
+          {showProfile && (
+            <div
+              style={{
+                marginBottom: 20,
+                padding: 12,
+                border: "1px solid #2a2a2a",
+                borderRadius: 8,
+                fontSize: 13,
+                color: "#aaa",
+              }}
+            >
+              <p style={{ margin: "0 0 6px 0" }}>
+                Email: <strong style={{ color: "#fff" }}>{user.email}</strong>
+              </p>
+              <p style={{ margin: 0 }}>
+                Username: <strong style={{ color: "#fff" }}>{user.username}</strong>
+              </p>
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
+            {["collection", "wishlist", "charts"].map((section) => (
+              <button
+                key={section}
+                onClick={() => setActiveSection(section)}
+                style={{
+                  padding: "8px 16px",
+                  background: activeSection === section ? "#fff" : "transparent",
+                  color: activeSection === section ? "#000" : "#aaa",
+                  border: "1px solid",
+                  borderColor: activeSection === section ? "#fff" : "#444",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                  fontWeight: activeSection === section ? 600 : 400,
+                }}
+              >
+                {section.charAt(0).toUpperCase() + section.slice(1)}
+              </button>
+            ))}
+          </div>
+          </div>
+
+          {activeSection === "collection" && (
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ flexShrink: 0 }}>
           <h2>My Collection</h2>
 
-          <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={artist}
-                onChange={(e) => setArtist(e.target.value)}
-                placeholder="Artist"
-              />
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Title"
-              />
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={format}
-                onChange={(e) => setFormat(e.target.value)}
-                placeholder="Format (vinyl, cd, tape...)"
-              />
-            </div>
-
-            <button type="submit">Add Release</button>
-          </form>
+          <button onClick={() => setShowAddCollection(true)} style={{ marginBottom: 20 }}>
+            + Add Release
+          </button>
 
           <div style={{ marginBottom: 20 }}>
             <h3>Filter & Sort</h3>
@@ -779,6 +874,8 @@ export default function Home() {
               </select>
             </div>
           </div>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto", paddingBottom: 24 }}>
 
           {collection.length === 0 ? (
             <p>No releases yet.</p>
@@ -809,37 +906,20 @@ export default function Home() {
             </ul>
           )}
 
-          <hr style={{ margin: "30px 0" }} />
+          </div>
+          </div>
+          )}
 
+          {activeSection === "wishlist" && (
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ flexShrink: 0 }}>
           <h2>My Wishlist</h2>
 
-          <form onSubmit={handleWishlistSubmit} style={{ marginBottom: 20 }}>
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={wishlistArtist}
-                onChange={(e) => setWishlistArtist(e.target.value)}
-                placeholder="Artist"
-              />
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={wishlistTitle}
-                onChange={(e) => setWishlistTitle(e.target.value)}
-                placeholder="Title"
-              />
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={wishlistFormat}
-                onChange={(e) => setWishlistFormat(e.target.value)}
-                placeholder="Format (vinyl, cd, tape...)"
-              />
-            </div>
-
-            <button type="submit">Add Wishlist Item</button>
-          </form>
+          <button onClick={() => setShowAddWishlist(true)} style={{ marginBottom: 20 }}>
+            + Add Wishlist Item
+          </button>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto", paddingBottom: 24 }}>
 
           {wishlist.length === 0 ? (
             <p>No wishlist items yet.</p>
@@ -870,50 +950,20 @@ export default function Home() {
             </ul>
           )}
 
-          <hr style={{ margin: "30px 0" }} />
+          </div>
+          </div>
+          )}
 
+          {activeSection === "charts" && (
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ flexShrink: 0 }}>
           <h2>My Charts</h2>
 
-          <form onSubmit={handleChartSubmit} style={{ marginBottom: 20 }}>
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={chartArtist}
-                onChange={(e) => setChartArtist(e.target.value)}
-                placeholder="Artist"
-              />
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <input
-                value={chartTitle}
-                onChange={(e) => setChartTitle(e.target.value)}
-                placeholder="Title"
-              />
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <select
-                value={chartCategory}
-                onChange={(e) => setChartCategory(e.target.value)}
-              >
-                <option value="alltime">All-time favorites</option>
-                <option value="current">Current favorites</option>
-                <option value="recommendation">Recommendations</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: 10 }}>
-              <textarea
-                value={chartComment}
-                onChange={(e) => setChartComment(e.target.value)}
-                placeholder="Comment (optional)"
-                rows={4}
-                style={{ width: "100%" }}
-              />
-            </div>
-
-            <button type="submit">Add Chart Entry</button>
-          </form>
+          <button onClick={() => setShowAddCharts(true)} style={{ marginBottom: 20 }}>
+            + Add Chart Entry
+          </button>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto", paddingBottom: 24 }}>
 
           {charts.length === 0 ? (
             <p>No chart entries yet.</p>
@@ -952,8 +1002,119 @@ export default function Home() {
               ))}
             </ul>
           )}
-        </>
+          </div>
+          </div>
+          )}
+        </div>
       )}
+
+      {showAddCollection ? (
+        <Modal title="Add Release" onClose={() => setShowAddCollection(false)}>
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: 10 }}>
+              <input
+                value={artist}
+                onChange={(e) => setArtist(e.target.value)}
+                placeholder="Artist"
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Title"
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <div style={{ marginBottom: 14 }}>
+              <input
+                value={format}
+                onChange={(e) => setFormat(e.target.value)}
+                placeholder="Format (vinyl, cd, tape...)"
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <button type="submit">Add Release</button>
+          </form>
+        </Modal>
+      ) : null}
+
+      {showAddWishlist ? (
+        <Modal title="Add Wishlist Item" onClose={() => setShowAddWishlist(false)}>
+          <form onSubmit={handleWishlistSubmit}>
+            <div style={{ marginBottom: 10 }}>
+              <input
+                value={wishlistArtist}
+                onChange={(e) => setWishlistArtist(e.target.value)}
+                placeholder="Artist"
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              <input
+                value={wishlistTitle}
+                onChange={(e) => setWishlistTitle(e.target.value)}
+                placeholder="Title"
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <div style={{ marginBottom: 14 }}>
+              <input
+                value={wishlistFormat}
+                onChange={(e) => setWishlistFormat(e.target.value)}
+                placeholder="Format (vinyl, cd, tape...)"
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <button type="submit">Add Wishlist Item</button>
+          </form>
+        </Modal>
+      ) : null}
+
+      {showAddCharts ? (
+        <Modal title="Add Chart Entry" onClose={() => setShowAddCharts(false)}>
+          <form onSubmit={handleChartSubmit}>
+            <div style={{ marginBottom: 10 }}>
+              <input
+                value={chartArtist}
+                onChange={(e) => setChartArtist(e.target.value)}
+                placeholder="Artist"
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              <input
+                value={chartTitle}
+                onChange={(e) => setChartTitle(e.target.value)}
+                placeholder="Title"
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              <select
+                value={chartCategory}
+                onChange={(e) => setChartCategory(e.target.value)}
+                style={{ width: "100%", padding: 8 }}
+              >
+                <option value="alltime">All-time favorites</option>
+                <option value="current">Current favorites</option>
+                <option value="recommendation">Recommendations</option>
+              </select>
+            </div>
+            <div style={{ marginBottom: 14 }}>
+              <textarea
+                value={chartComment}
+                onChange={(e) => setChartComment(e.target.value)}
+                placeholder="Comment (optional)"
+                rows={4}
+                style={{ width: "100%", padding: 8 }}
+              />
+            </div>
+            <button type="submit">Add Chart Entry</button>
+          </form>
+        </Modal>
+      ) : null}
 
       {editingCollectionItem ? (
         <Modal title="Edit collection item" onClose={closeCollectionModal}>
