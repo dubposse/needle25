@@ -736,9 +736,9 @@ export default function Home() {
             Organize your vinyl & music collection
           </p>
           <p style={{ color: "#888", fontSize: 13, lineHeight: 1.7, margin: "0 0 10px 0" }}>
-            Manage a wishlist and share your personal charts <br /> – from current favorites to all-time picks.
+            Manage a wishlist and share your personal charts. <br /> &nbsp;<img src="/logo.png" alt="" style={{ height: 11, width: "auto", opacity: 0.4, verticalAlign: "middle", position: "relative", top: "-2px" }} />&nbsp; From current favorites to all-time picks.
           </p>
-          <p style={{ color: "#888", fontSize: 12, lineHeight: 1.6, margin: 0 }}>
+          <p style={{ color: "#888", fontSize: 13, lineHeight: 1.7, margin: 0 }}>
             All data is private. <br />  Only your curated charts are public by default.
           </p>
         </div>
@@ -748,7 +748,7 @@ export default function Home() {
           {authMode === "login" && (
             <div style={{ marginBottom: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: showDemoInfo ? 8 : 0 }}>
-                <p style={{ fontSize: 12, color: "#444", margin: 0, lineHeight: 1.8 }}>
+                <p style={{ fontSize: 13, color: "#444", margin: 0, lineHeight: 1.7 }}>
                   Demo Access <br />Email: test@needle25<br />Password: secret123
                 </p>
                 <button
@@ -788,23 +788,6 @@ export default function Home() {
               )}
             </div>
           )}
-
-          <p style={{ marginBottom: 16, fontSize: 12, color: "#444", lineHeight: 1.7, display: "flex", alignItems: "center", gap: 8 }}>
-            Questions, feedback or issues?
-            {showContactEmail ? (
-              <span style={{ color: "#666", fontSize: 12 }}>matthiasbrehm1@gmx.de</span>
-            ) : null}
-            <button
-              onClick={() => setShowContactEmail((v) => !v)}
-              title="Show contact"
-              style={{ background: "none", border: "none", color: "#555", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <polyline points="2,4 12,13 22,4"/>
-              </svg>
-            </button>
-          </p>
 
           <form onSubmit={handleAuthSubmit} style={{ marginBottom: 16, display: "flex", flexDirection: "column", gap: 10, maxWidth: 320 }}>
             <input
@@ -882,6 +865,20 @@ export default function Home() {
           >
             Switch to {authMode === "login" ? "Register" : "Login"}
           </button>
+
+          <p style={{ marginTop: 24, fontSize: 12, color: "#444", lineHeight: 1.7, display: "flex", alignItems: "center", gap: 6 }}>
+            Support
+            <button
+              onClick={() => setShowContactEmail((v) => !v)}
+              title="Show contact"
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0, display: "inline-flex", alignItems: "center" }}
+            >
+              <img src="/logo.png" alt="Contact" style={{ height: 13, width: "auto", opacity: 0.5, verticalAlign: "middle", margin: "0 1px" }} />
+            </button>
+            {showContactEmail ? (
+              <span style={{ color: "#666", fontSize: 12 }}>matthiasbrehm1@gmx.de</span>
+            ) : null}
+          </p>
         </div>
       ) : (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
