@@ -6,6 +6,7 @@ import { legal } from "@/lib/legal";
 export default function Footer() {
   const [open, setOpen] = useState(null); // "impressum" | "datenschutz" | null
   const [lang, setLang] = useState("de");
+  const [showEmail, setShowEmail] = useState(false);
 
   const current = open ? legal[lang][open] : null;
 
@@ -33,12 +34,21 @@ export default function Footer() {
         >
           Privacy Policy
         </button>
-        <a
-          href="mailto:matthiasbrehm1@gmx.de"
-          style={{ color: "#444", fontSize: 12, textDecoration: "none", marginLeft: "auto" }}
-        >
-          Contact
-        </a>
+        <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+          {showEmail && (
+            <span style={{ color: "#555", fontSize: 12 }}>matthiasbrehm1@gmx.de</span>
+          )}
+          <button
+            onClick={() => setShowEmail((v) => !v)}
+            title="Contact"
+            style={{ background: "none", border: "none", color: "#444", cursor: "pointer", padding: 0, lineHeight: 1, fontSize: 14 }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <polyline points="2,4 12,13 22,4"/>
+            </svg>
+          </button>
+        </span>
       </footer>
 
       {open && (

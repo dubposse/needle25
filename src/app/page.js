@@ -105,6 +105,7 @@ export default function Home() {
   const [showAddCharts, setShowAddCharts] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showContactEmail, setShowContactEmail] = useState(false);
 
   const [artistFilter, setArtistFilter] = useState("");
   const [formatFilter, setFormatFilter] = useState("");
@@ -738,11 +739,21 @@ export default function Home() {
             </p>
           )}
 
-          <p style={{ marginBottom: 16, fontSize: 12, color: "#444", lineHeight: 1.7 }}>
-            Questions, feedback or issues?{" "}
-            <a href="mailto:matthiasbrehm1@gmx.de" style={{ color: "#666", textDecoration: "none", fontSize: 15 }} title="matthiasbrehm1@gmx.de">
-              ✉︎
-            </a>
+          <p style={{ marginBottom: 16, fontSize: 12, color: "#444", lineHeight: 1.7, display: "flex", alignItems: "center", gap: 8 }}>
+            Questions, feedback or issues?
+            {showContactEmail ? (
+              <span style={{ color: "#666", fontSize: 12 }}>matthiasbrehm1@gmx.de</span>
+            ) : null}
+            <button
+              onClick={() => setShowContactEmail((v) => !v)}
+              title="Show contact"
+              style={{ background: "none", border: "none", color: "#555", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <polyline points="2,4 12,13 22,4"/>
+              </svg>
+            </button>
           </p>
 
           <form onSubmit={handleAuthSubmit} style={{ marginBottom: 16, display: "flex", flexDirection: "column", gap: 10, maxWidth: 320 }}>
