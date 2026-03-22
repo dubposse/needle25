@@ -66,6 +66,13 @@ export async function PATCH(request, ctx) {
     return Response.json({ error: "Invalid category" }, { status: 400 });
   }
 
+  if (/https?:\/\/|ftp:\/\/|www\./i.test(comment)) {
+    return Response.json(
+      { error: "Links are not allowed in the comment" },
+      { status: 400 }
+    );
+  }
+
   // Bestehenden Eintrag laden
   const existingResult = await pool.query(
     "SELECT id, category FROM charts WHERE id = $1 AND user_id = $2",

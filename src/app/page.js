@@ -106,6 +106,7 @@ export default function Home() {
   const [showProfile, setShowProfile] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showContactEmail, setShowContactEmail] = useState(false);
+  const [showDemoInfo, setShowDemoInfo] = useState(false);
 
   const [artistFilter, setArtistFilter] = useState("");
   const [formatFilter, setFormatFilter] = useState("");
@@ -464,6 +465,11 @@ export default function Home() {
       return;
     }
 
+    if (/https?:\/\/|ftp:\/\/|www\./i.test(newChartItem.comment)) {
+      setMessage("Links are not allowed in the comment");
+      return;
+    }
+
     const res = await fetch("/api/charts", {
       method: "POST",
       headers: {
@@ -669,6 +675,11 @@ export default function Home() {
       return;
     }
 
+    if (/https?:\/\/|ftp:\/\/|www\./i.test(editingChartItem.comment?.trim())) {
+      setMessage("Links are not allowed in the comment");
+      return;
+    }
+
     const res = await fetch(`/api/charts/${editingChartItem.id}`, {
       method: "PATCH",
       headers: {
@@ -721,22 +732,61 @@ export default function Home() {
         <div style={{ flex: 1, overflowY: "auto", paddingBottom: 32 }}>
 
         <div style={{ marginBottom: 32 }}>
-          <p style={{ color: "#555", fontSize: 14, lineHeight: 1.7, margin: "0 0 8px 0" }}>
-            Organize your music collection,<br /> wishlist & personal charts - 
-            <br />
-            discover what others are listening to.
+          <p style={{ color: "#fff", fontSize: 16, fontWeight: 700, lineHeight: 1.4, margin: "0 0 6px 0" }}>
+            Organize your vinyl & music collection
           </p>
-          <p style={{ color: "#555", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
-            All data is private <br />- only your curated charts are public by default
+          <p style={{ color: "#888", fontSize: 13, lineHeight: 1.7, margin: "0 0 10px 0" }}>
+            Manage a wishlist and share your personal charts <br />  — from current favorites to all-time picks.
+          </p>
+          <p style={{ color: "#888", fontSize: 12, lineHeight: 1.6, margin: 0 }}>
+            All data is private. <br />  Only your curated charts are public by default.
           </p>
         </div>
 
           <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>{authMode === "register" ? "Register" : "Login"}</h2>
 
           {authMode === "login" && (
-            <p style={{ marginBottom: 14, fontSize: 12, color: "#444", maxWidth: 320, lineHeight: 1.8 }}>
-              Demo Access <br />Email: test@needle25<br />Password: secret123
-            </p>
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: showDemoInfo ? 8 : 0 }}>
+                <p style={{ fontSize: 12, color: "#444", margin: 0, lineHeight: 1.8 }}>
+                  Demo Access <br />Email: test@needle25<br />Password: secret123
+                </p>
+                <button
+                  onClick={() => setShowDemoInfo((v) => !v)}
+                  title="Demo features"
+                  style={{
+                    background: "none",
+                    border: "1px solid #444",
+                    color: "#888",
+                    borderRadius: "50%",
+                    width: 16,
+                    height: 16,
+                    fontSize: 10,
+                    cursor: "pointer",
+                    padding: 0,
+                    lineHeight: 1,
+                    flexShrink: 0,
+                    alignSelf: "flex-start",
+                    marginTop: 2,
+                  }}
+                >
+                  i
+                </button>
+              </div>
+              {showDemoInfo && (
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.7, padding: "8px 10px", border: "1px solid #2a2a2a", borderRadius: 6, maxWidth: 300 }}>
+                  <strong style={{ color: "#999", display: "block", marginBottom: 4 }}>Demo Features</strong>
+                  <ul style={{ margin: 0, paddingLeft: 14 }}>
+                    <li>Manage your music collection (vinyl, cd, tape ...)</li>
+                    <li>Maintain a wishlist</li>
+                    <li>Create personal charts</li>
+                    <li>Share charts publicly</li>
+                    <li>Browse genres & discover</li>
+                  </ul>
+                  <p style={{ margin: "6px 0 0 0", color: "#555" }}>Account deletion is disabled in demo mode.</p>
+                </div>
+              )}
+            </div>
           )}
 
           <p style={{ marginBottom: 16, fontSize: 12, color: "#444", lineHeight: 1.7, display: "flex", alignItems: "center", gap: 8 }}>
@@ -904,20 +954,26 @@ export default function Home() {
               <p style={{ margin: "0 0 14px 0" }}>
                 Username: <strong style={{ color: "#fff" }}>{user.username}</strong>
               </p>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                style={{
-                  background: "none",
-                  border: "1px solid #5c1f1f",
-                  color: "#c0392b",
-                  borderRadius: 6,
-                  padding: "6px 12px",
-                  fontSize: 12,
-                  cursor: "pointer",
-                }}
-              >
-                Delete Account
-              </button>
+              {user.email !== "test@needle25" ? (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  style={{
+                    background: "none",
+                    border: "1px solid #5c1f1f",
+                    color: "#c0392b",
+                    borderRadius: 6,
+                    padding: "6px 12px",
+                    fontSize: 12,
+                    cursor: "pointer",
+                  }}
+                >
+                  Delete Account
+                </button>
+              ) : (
+                <p style={{ margin: 0, fontSize: 11, color: "#555", fontStyle: "italic" }}>
+                  Account deletion is not available in demo mode.
+                </p>
+              )}
             </div>
           )}
 

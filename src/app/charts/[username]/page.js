@@ -1,6 +1,13 @@
 import pool from "@/lib/db";
 import { notFound } from "next/navigation";
 
+export async function generateMetadata() {
+  return {
+    title: "Record Charts – Needle25",
+    description: "Personal music charts - vinyl, cd, tape and more.",
+  };
+}
+
 const CATEGORY_LABELS = {
   alltime: "All-time favorites",
   current: "Current favorites",

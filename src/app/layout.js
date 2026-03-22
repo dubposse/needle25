@@ -15,11 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Needle25",
   description:
-    "Needle25 is a simple web app to organize your vinyl, tape and cd collection, manage a wishlist, and share your personal charts.",
+    "Organize your vinyl & music collection, manage a wishlist, and share your personal charts - from current favorites to all-time picks.",
   openGraph: {
     title: "Needle25",
     description:
-      "Personal music archive & discovery app",
+      "Organize your vinyl & music collection, manage a wishlist, and share your personal charts - from current favorites to all-time picks.",
     url: "https://needle25.vercel.app/",
     siteName: "Needle25",
     images: [

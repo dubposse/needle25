@@ -43,6 +43,13 @@ export async function POST(request) {
     return Response.json({ error: "Invalid category" }, { status: 400 });
   }
 
+  if (/https?:\/\/|ftp:\/\/|www\./i.test(comment)) {
+    return Response.json(
+      { error: "Links are not allowed in the comment" },
+      { status: 400 }
+    );
+  }
+
   // 🔥 LIMITS DEFINIEREN
   const categoryLimits = {
     alltime: 5,

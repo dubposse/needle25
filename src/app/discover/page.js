@@ -14,7 +14,7 @@ export default function DiscoverPage() {
     const url = "https://needle25.vercel.app/";
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Needle25", text: "Create your personal music charts on Needle25", url });
+        await navigator.share({ title: "Needle25 - Track your vinyl & music collection", url });
       } catch {}
     } else {
       await navigator.clipboard.writeText(url);
