@@ -8,6 +8,20 @@ export default function DiscoverPage() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  async function handleShare() {
+    const url = "https://needle25.vercel.app/";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Needle25", text: "Create your personal music charts on Needle25", url });
+      } catch {}
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
 
   async function handleSelectGenre(genre) {
     setSelectedGenre(genre);
@@ -66,7 +80,38 @@ export default function DiscoverPage() {
         {message ? <p style={{ color: "#888" }}>{message}</p> : null}
 
         {!isLoading && selectedGenre && users.length === 0 ? (
-          <p style={{ color: "#666" }}>No users found.</p>
+          <div style={{ marginTop: 8 }}>
+            <p style={{ color: "#666", marginBottom: 12 }}>No users found.</p>
+            <p style={{ color: "#444", fontSize: 13, lineHeight: 1.8, maxWidth: 480 }}>
+              Needle25 is just getting started - the first listeners are still finding their way here.
+              Want to help build the community? Share this link with fellow music lovers and let them
+              create their personal charts:
+            </p>
+            <p style={{ marginTop: 12 }}>
+              <button
+                onClick={handleShare}
+                style={{
+                  background: "none",
+                  border: "1px solid #333",
+                  borderRadius: 5,
+                  color: copied ? "#6bcb77" : "#666",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  padding: "3px 10px",
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+                {copied ? "Copied ✓" : "Share with friends"}
+              </button>
+            </p>
+          </div>
         ) : null}
 
         <ul style={{ listStyle: "none", padding: 0 }}>

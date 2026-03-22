@@ -1,8 +1,17 @@
 import pool from "@/lib/db";
 import bcrypt from "bcrypt";
 import { GENRES } from "@/lib/genres";
+import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request) {
+  const { ok, retryAfter } = rateLimit(request, { limit: 5, window: 60 * 60 * 1000 });
+  if (!ok) {
+    return Response.json(
+      { error: `Too many registration attempts. Please try again in ${retryAfter}s.` },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
+    );
+  }
+
   const body = await request.json();
 
   const email = body.email?.trim().toLowerCase();

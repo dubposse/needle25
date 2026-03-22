@@ -104,6 +104,7 @@ export default function Home() {
   const [showAddWishlist, setShowAddWishlist] = useState(false);
   const [showAddCharts, setShowAddCharts] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [artistFilter, setArtistFilter] = useState("");
   const [formatFilter, setFormatFilter] = useState("");
@@ -233,6 +234,17 @@ export default function Home() {
     }
   }, [artistFilter, formatFilter, sortBy, user]);
 
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(async () => {
+      const res = await fetch("/api/auth/me");
+      if (res.status === 401) {
+        handleSessionExpired();
+      }
+    }, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user]);
+
   async function handleAuthSubmit(e) {
     e.preventDefault();
     setMessage("");
@@ -293,6 +305,42 @@ export default function Home() {
     await loadWishlist();
     await loadCharts();
     setIsLoadingAuth(false);
+  }
+
+  function handleSessionExpired() {
+    setUser(null);
+    setCollection([]);
+    setWishlist([]);
+    setCharts([]);
+    setEditingCollectionItem(null);
+    setEditingWishlistItem(null);
+    setEditingChartItem(null);
+    setShowProfile(false);
+    setMessage("Your session has expired. Please log in again.");
+  }
+
+  async function handleDeleteAccount() {
+    setMessage("");
+
+    const res = await fetch("/api/auth/delete", {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setMessage(data.error || "Could not delete account");
+      setShowDeleteConfirm(false);
+      return;
+    }
+
+    setUser(null);
+    setCollection([]);
+    setWishlist([]);
+    setCharts([]);
+    setShowDeleteConfirm(false);
+    setShowProfile(false);
+    setMessage("Account deleted");
   }
 
   async function handleLogout() {
@@ -690,6 +738,13 @@ export default function Home() {
             </p>
           )}
 
+          <p style={{ marginBottom: 16, fontSize: 12, color: "#444", lineHeight: 1.7 }}>
+            Questions, feedback or issues?{" "}
+            <a href="mailto:matthiasbrehm1@gmx.de" style={{ color: "#666", textDecoration: "none", fontSize: 15 }} title="matthiasbrehm1@gmx.de">
+              ✉︎
+            </a>
+          </p>
+
           <form onSubmit={handleAuthSubmit} style={{ marginBottom: 16, display: "flex", flexDirection: "column", gap: 10, maxWidth: 320 }}>
             <input
               value={email}
@@ -835,9 +890,23 @@ export default function Home() {
               <p style={{ margin: "0 0 6px 0" }}>
                 Email: <strong style={{ color: "#fff" }}>{user.email}</strong>
               </p>
-              <p style={{ margin: 0 }}>
+              <p style={{ margin: "0 0 14px 0" }}>
                 Username: <strong style={{ color: "#fff" }}>{user.username}</strong>
               </p>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                style={{
+                  background: "none",
+                  border: "1px solid #5c1f1f",
+                  color: "#c0392b",
+                  borderRadius: 6,
+                  padding: "6px 12px",
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                Delete Account
+              </button>
             </div>
           )}
 
@@ -1419,6 +1488,46 @@ export default function Home() {
               Delete
             </button>
             <button onClick={closeChartModal}>Cancel</button>
+          </div>
+        </Modal>
+      ) : null}
+
+      {showDeleteConfirm ? (
+        <Modal title="Delete Account" onClose={() => setShowDeleteConfirm(false)}>
+          <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
+            This will permanently delete your account and all associated data
+            (collection, wishlist & charts). This action cannot be undone.
+          </p>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              onClick={handleDeleteAccount}
+              style={{
+                background: "#c0392b",
+                border: "none",
+                color: "#fff",
+                borderRadius: 6,
+                padding: "8px 16px",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Yes, delete my account
+            </button>
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              style={{
+                background: "none",
+                border: "1px solid #444",
+                color: "#aaa",
+                borderRadius: 6,
+                padding: "8px 16px",
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </Modal>
       ) : null}

@@ -25,14 +25,20 @@ export default function Footer() {
           onClick={() => setOpen("impressum")}
           style={{ background: "none", border: "none", color: "#444", fontSize: 12, cursor: "pointer", padding: 0 }}
         >
-          Impressum
+          Imprint
         </button>
         <button
           onClick={() => setOpen("datenschutz")}
           style={{ background: "none", border: "none", color: "#444", fontSize: 12, cursor: "pointer", padding: 0 }}
         >
-          Datenschutz
+          Privacy Policy
         </button>
+        <a
+          href="mailto:matthiasbrehm1@gmx.de"
+          style={{ color: "#444", fontSize: 12, textDecoration: "none", marginLeft: "auto" }}
+        >
+          Contact
+        </a>
       </footer>
 
       {open && (

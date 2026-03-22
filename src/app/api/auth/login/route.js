@@ -2,8 +2,17 @@ import pool from "@/lib/db";
 import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
+import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request) {
+  const { ok, retryAfter } = rateLimit(request, { limit: 10, window: 15 * 60 * 1000 });
+  if (!ok) {
+    return Response.json(
+      { error: `Too many login attempts. Please try again in ${retryAfter}s.` },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
+    );
+  }
+
   const body = await request.json();
 
   const email = body.email?.trim().toLowerCase();
