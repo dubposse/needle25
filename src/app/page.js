@@ -866,7 +866,7 @@ export default function Home() {
             Switch to {authMode === "login" ? "Register" : "Login"}
           </button>
 
-          <p style={{ marginTop: 24, fontSize: 12, color: "#444", lineHeight: 1.7, display: "flex", alignItems: "center", gap: 6 }}>
+          <p style={{ marginTop: 24, fontSize: 13, color: "#444", lineHeight: 1.7, display: "flex", alignItems: "center", gap: 6 }}>
             Support
             <button
               onClick={() => setShowContactEmail((v) => !v)}
