@@ -736,7 +736,7 @@ export default function Home() {
             Organize your vinyl & music collection
           </p>
           <p style={{ color: "#888", fontSize: 13, lineHeight: 1.7, margin: "0 0 10px 0" }}>
-            Manage a wishlist and share your personal charts <br />  — from current favorites to all-time picks.
+            Manage a wishlist and share your personal charts <br /> – from current favorites to all-time picks.
           </p>
           <p style={{ color: "#888", fontSize: 12, lineHeight: 1.6, margin: 0 }}>
             All data is private. <br />  Only your curated charts are public by default.
@@ -783,7 +783,7 @@ export default function Home() {
                     <li>Share charts publicly</li>
                     <li>Browse genres & discover</li>
                   </ul>
-                  <p style={{ margin: "6px 0 0 0", color: "#555" }}>Account deletion is disabled in demo mode.</p>
+                  <p style={{ margin: "6px 0 0 0", color: "#999", fontStyle: "italic" }}>Shared Demo Account – Data resets every 24 hours.</p>
                 </div>
               )}
             </div>
