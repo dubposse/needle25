@@ -35,7 +35,7 @@ export default function Footer() {
           Privacy Policy
         </button>
         <a
-          href="https://github.com/matthiasbrehm/needle25"
+          href="https://github.com/dubposse/needle25"
           target="_blank"
           rel="noopener noreferrer"
           title="Source code (AGPL-3.0)"
