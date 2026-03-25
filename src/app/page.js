@@ -1,3 +1,9 @@
+/**
+ * Needle25 - Personal music collection manager and chart sharing platform for vinyl, tape, and CD enthusiasts.
+ * Copyright (C) 2026 Matthias Brehm
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0)
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
