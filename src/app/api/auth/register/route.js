@@ -4,7 +4,7 @@ import { GENRES } from "@/lib/genres";
 import { rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request) {
-  const { ok, retryAfter } = rateLimit(request, { limit: 5, window: 60 * 60 * 1000 });
+  const { ok, retryAfter } = await rateLimit(request, { limit: 5, window: 60 * 60 * 1000 });
   if (!ok) {
     return Response.json(
       { error: `Too many registration attempts. Please try again in ${retryAfter}s.` },
@@ -12,10 +12,15 @@ export async function POST(request) {
     );
   }
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "Invalid request body" }, { status: 400 });
+  }
 
   const email = body.email?.trim().toLowerCase();
-  const password = body.password?.trim();
+  const password = body.password;
   const username = body.username?.trim().toLowerCase();
   const favoriteGenre1 = body.favoriteGenre1?.trim().toLowerCase();
   const favoriteGenre2 = body.favoriteGenre2?.trim().toLowerCase();
@@ -28,6 +33,10 @@ export async function POST(request) {
       },
       { status: 400 }
     );
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return Response.json({ error: "Invalid email address" }, { status: 400 });
   }
 
   if (password.length < 6) {
@@ -60,38 +69,42 @@ export async function POST(request) {
     );
   }
 
-  const existingUserByEmail = await pool.query(
-    "SELECT id FROM users WHERE email = $1",
-    [email]
-  );
+  try {
+    const existingUserByEmail = await pool.query(
+      "SELECT id FROM users WHERE email = $1",
+      [email]
+    );
 
-  if (existingUserByEmail.rowCount > 0) {
-    return Response.json({ error: "User already exists" }, { status: 409 });
+    if (existingUserByEmail.rowCount > 0) {
+      return Response.json({ error: "User already exists" }, { status: 409 });
+    }
+
+    const existingUserByUsername = await pool.query(
+      "SELECT id FROM users WHERE username = $1",
+      [username]
+    );
+
+    if (existingUserByUsername.rowCount > 0) {
+      return Response.json({ error: "Username already taken" }, { status: 409 });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const result = await pool.query(
+      `INSERT INTO users (
+        email,
+        username,
+        password_hash,
+        favorite_genre_1,
+        favorite_genre_2
+      )
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, email, username, favorite_genre_1, favorite_genre_2, created_at`,
+      [email, username, passwordHash, favoriteGenre1, favoriteGenre2]
+    );
+
+    return Response.json(result.rows[0], { status: 201 });
+  } catch {
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  const existingUserByUsername = await pool.query(
-    "SELECT id FROM users WHERE username = $1",
-    [username]
-  );
-
-  if (existingUserByUsername.rowCount > 0) {
-    return Response.json({ error: "Username already taken" }, { status: 409 });
-  }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  const result = await pool.query(
-    `INSERT INTO users (
-      email,
-      username,
-      password_hash,
-      favorite_genre_1,
-      favorite_genre_2
-    )
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, email, username, favorite_genre_1, favorite_genre_2, created_at`,
-    [email, username, passwordHash, favoriteGenre1, favoriteGenre2]
-  );
-
-  return Response.json(result.rows[0], { status: 201 });
 }

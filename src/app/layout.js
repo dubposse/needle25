@@ -20,11 +20,11 @@ export const metadata = {
     title: "Needle25",
     description:
       "Organize your vinyl & music collection, manage a wishlist, and share your personal charts - from current favorites to all-time picks.",
-    url: "https://needle25.vercel.app/",
+    url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "Needle25",
     images: [
       {
-        url: "https://needle25.vercel.app/og-image.jpg",
+        url: `${process.env.NEXT_PUBLIC_APP_URL}/og-image.jpg`,
         width: 1200,
         height: 630,
       },

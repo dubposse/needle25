@@ -15,16 +15,20 @@ export async function DELETE(request, ctx) {
     return Response.json({ error: "Invalid id" }, { status: 400 });
   }
 
-  const result = await pool.query(
-    "DELETE FROM wishlist WHERE id = $1 AND user_id = $2",
-    [itemId, user.id]
-  );
+  try {
+    const result = await pool.query(
+      "DELETE FROM wishlist WHERE id = $1 AND user_id = $2",
+      [itemId, user.id]
+    );
 
-  if (result.rowCount === 0) {
-    return Response.json({ error: "Not found" }, { status: 404 });
+    if (result.rowCount === 0) {
+      return Response.json({ error: "Not found" }, { status: 404 });
+    }
+
+    return Response.json({ success: true });
+  } catch {
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  return Response.json({ success: true });
 }
 
 export async function PATCH(request, ctx) {
@@ -41,7 +45,12 @@ export async function PATCH(request, ctx) {
     return Response.json({ error: "Invalid id" }, { status: 400 });
   }
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "Invalid request body" }, { status: 400 });
+  }
 
   const artist = body.artist?.trim();
   const title = body.title?.trim();
@@ -54,17 +63,21 @@ export async function PATCH(request, ctx) {
     );
   }
 
-  const result = await pool.query(
-    `UPDATE wishlist
-     SET artist = $1, title = $2, format = $3, updated_at = NOW()
-     WHERE id = $4 AND user_id = $5
-     RETURNING *`,
-    [artist, title, format, itemId, user.id]
-  );
+  try {
+    const result = await pool.query(
+      `UPDATE wishlist
+       SET artist = $1, title = $2, format = $3, updated_at = NOW()
+       WHERE id = $4 AND user_id = $5
+       RETURNING *`,
+      [artist, title, format, itemId, user.id]
+    );
 
-  if (result.rowCount === 0) {
-    return Response.json({ error: "Not found" }, { status: 404 });
+    if (result.rowCount === 0) {
+      return Response.json({ error: "Not found" }, { status: 404 });
+    }
+
+    return Response.json(result.rows[0]);
+  } catch {
+    return Response.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  return Response.json(result.rows[0]);
 }

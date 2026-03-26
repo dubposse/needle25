@@ -11,7 +11,7 @@ export default function DiscoverPage() {
   const [copied, setCopied] = useState(false);
 
   async function handleShare() {
-    const url = "https://needle25.vercel.app/";
+    const url = process.env.NEXT_PUBLIC_APP_URL;
     if (navigator.share) {
       try {
         await navigator.share({ title: "Needle25 - Track your vinyl & music collection", url });
@@ -92,9 +92,9 @@ export default function DiscoverPage() {
                 onClick={handleShare}
                 style={{
                   background: "none",
-                  border: "1px solid #333",
+                  border: "1px solid #2a4a3a",
                   borderRadius: 5,
-                  color: copied ? "#6bcb77" : "#666",
+                  color: copied ? "#6bcb77" : "#4caf85",
                   fontSize: 12,
                   cursor: "pointer",
                   padding: "3px 10px",

@@ -6,7 +6,11 @@ export async function POST() {
   const sessionToken = cookieStore.get("session_token")?.value;
 
   if (sessionToken) {
-    await pool.query("DELETE FROM sessions WHERE token = $1", [sessionToken]);
+    try {
+      await pool.query("DELETE FROM sessions WHERE token = $1", [sessionToken]);
+    } catch {
+      // Logout completes even if session deletion fails
+    }
   }
 
   cookieStore.set("session_token", "", {

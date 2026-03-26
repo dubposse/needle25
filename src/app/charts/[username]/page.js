@@ -17,7 +17,7 @@ const CATEGORY_LABELS = {
 export default async function PublicChartsPage({ params }) {
   const { username } = await params;
 
-  // 👉 User holen
+  // User holen
   const userResult = await pool.query(
     "SELECT id, username FROM users WHERE username = $1",
     [username]
@@ -29,7 +29,7 @@ export default async function PublicChartsPage({ params }) {
 
   const user = userResult.rows[0];
 
-  // 👉 Charts holen
+  // Charts holen
   const chartsResult = await pool.query(
     `SELECT id, artist, title, category, comment
      FROM charts
@@ -40,7 +40,7 @@ export default async function PublicChartsPage({ params }) {
 
   const charts = chartsResult.rows;
 
-  // 👉 Gruppieren
+  // Gruppieren
   const grouped = {
     alltime: [],
     current: [],
