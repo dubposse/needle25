@@ -84,8 +84,7 @@ export default function DiscoverPage() {
             <p style={{ color: "#666", marginBottom: 12 }}>No users found.</p>
             <p style={{ color: "#444", fontSize: 13, lineHeight: 1.8, maxWidth: 480 }}>
               Needle25 is just getting started - the first listeners are still finding their way here.
-              Want to help build the community? Share this link with fellow music lovers and let them
-              create their personal charts:
+              Want to help build the community? Share this link with fellow music lovers and let them create their personal charts:
             </p>
             <p style={{ marginTop: 12 }}>
               <button
@@ -111,6 +110,28 @@ export default function DiscoverPage() {
                 {copied ? "Copied ✓" : "Share with friends"}
               </button>
             </p>
+            <div style={{ marginTop: 18 }}>
+              <p style={{ color: "#444", fontSize: 13, lineHeight: 1.8, maxWidth: 480, marginBottom: 8 }}>
+                Or check out the public charts of our demo account:
+              </p>
+              <a
+                href="/charts/testuser"
+                style={{
+                  display: "inline-block",
+                  background: "#222",
+                  color: "#fff",
+                  textDecoration: "none",
+                  fontSize: 15,
+                  padding: "8px 18px",
+                  borderRadius: 6,
+                  border: "1px solid #333",
+                  fontWeight: 600,
+                  marginTop: 2,
+                }}
+              >
+                View demo charts
+              </a>
+            </div>
           </div>
         ) : null}
 

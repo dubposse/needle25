@@ -134,9 +134,9 @@ export default function AuthForm({ onLoginSuccess, setMessage }) {
               style={{ fontSize: 13, color: "#444", margin: 0, lineHeight: 1.7 }}
             >
               Demo Access <br />
-              Email: {process.env.NEXT_PUBLIC_DEMO_EMAIL || "nicht gesetzt"}
+              Email: {process.env.NEXT_PUBLIC_DEMO_EMAIL}
               <br />
-              Password: {process.env.NEXT_PUBLIC_DEMO_PASSWORD || "nicht gesetzt"}
+              Password: {process.env.NEXT_PUBLIC_DEMO_PASSWORD}
             </p>
             <button
               onClick={() => setShowDemoInfo((v) => !v)}
