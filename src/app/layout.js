@@ -16,6 +16,7 @@ export const metadata = {
   title: "Needle25",
   description:
     "Organize your vinyl & music collection, manage a wishlist, and share your personal charts - from current favorites to all-time picks.",
+    
   openGraph: {
     title: "Needle25",
     description:
@@ -30,6 +31,10 @@ export const metadata = {
       },
     ],
     type: "website",
+  },
+    icons: {
+    icon: "/favicon.ico",   
+    apple: "/apple-touch-icon.png",
   },
 };
 
