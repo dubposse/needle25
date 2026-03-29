@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://needle25.vercel.app/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://needle25.vercel.app/discover</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://needle25.vercel.app/charts/dubmatt</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://needle25.vercel.app/charts/testuser</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+   <!--
+  <url>
+    <loc>https://needle25.vercel.app/discover/genres/rock</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  -->
+  <!-- Weitere dynamische User- und Genre-URLs können automatisiert ergänzt werden -->
+</urlset>

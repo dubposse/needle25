@@ -41,6 +41,21 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Needle25',
+              url: 'https://needle25.de/',
+              description:
+                'Organize your vinyl & music collection, manage a wishlist, and share your personal charts - from current favorites to all-time picks.',
+            }),
+          }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
         <Footer />
