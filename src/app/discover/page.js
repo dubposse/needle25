@@ -16,7 +16,7 @@ export default function DiscoverPage() {
       try {
         await navigator.share({
           title: "Needle25 - Track your vinyl & music collection",
-          text: "", //  das soll jetzt anzuklicken sein 
+          text: "", //  wenn hier was drin steht, wird folgender Link: -Needle25.vercel.app- angezeigt  
           url,
         });
       } catch {}
