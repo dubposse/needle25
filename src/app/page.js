@@ -118,7 +118,7 @@ export default function Home() {
       <Head>
         <meta property="og:title" content="Needle25 – Organize & share your music charts" />
         <meta property="og:description" content="Organize your collection, share your charts, and discover new music!" />
-        <meta property="og:image" content={`${process.env.needle25.vercel.app}/logo.png`} />
+        <meta property="og:image" content="https://needle25.vercel.app/logo.png" />
         <meta property="og:url" content="https://needle25.vercel.app/" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
