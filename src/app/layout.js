@@ -21,11 +21,11 @@ export const metadata = {
     title: "Needle25",
     description:
       "Organize your vinyl & music collection and share your personal charts.",
-    url: process.env.NEXT_PUBLIC_APP_URL,
+    url: "https://needle25.vercel.app/",
     siteName: "Needle25",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_APP_URL}/og-image.jpg`,
+        url: "https://needle25.vercel.app/og-image.jpg",
         width: 1200,
         height: 630,
       },
@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'Needle25',
-              url: process.env.NEXT_PUBLIC_APP_URL,
+              url: "https://needle25.vercel.app/",
               description:
                 'Organize your vinyl & music collection, manage a wishlist, and share your personal charts - from current favorites to all-time picks.',
             }),

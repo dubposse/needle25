@@ -11,7 +11,7 @@ export default function DiscoverPage() {
   const [copied, setCopied] = useState(false);
 
   async function handleShare() {
-    const url = process.env.NEXT_PUBLIC_APP_URL;
+    const url = "https://needle25.vercel.app/";
     if (navigator.share) {
       try {
         await navigator.share({

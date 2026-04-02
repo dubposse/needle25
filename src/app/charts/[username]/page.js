@@ -59,8 +59,8 @@ export default async function PublicChartsPage({ params }) {
       <Head>
         <meta property="og:title" content={`Needle25 – Deine Charts von ${user.username}`} />
         <meta property="og:description" content="Teile deine Charts mit Freunden!" />
-        <meta property="og:image" content={process.env.NEXT_PUBLIC_APP_URL} />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_APP_URL}/charts/${user.username}`} />
+        <meta property="og:image" content="https://needle25.vercel.app/" />
+        <meta property="og:url" content={`https://needle25.vercel.app/charts/${user.username}`} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
