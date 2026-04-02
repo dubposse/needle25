@@ -20,7 +20,7 @@ export const metadata = {
   openGraph: {
     title: "Needle25",
     description:
-      "Organize your vinyl & music collection, manage a wishlist, and share your personal charts - from current favorites to all-time picks.",
+      "Organize your vinyl & music collection and share your personal charts.",
     url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "Needle25",
     images: [
@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'Needle25',
-              url: 'https://needle25.de/',
+              url: process.env.NEXT_PUBLIC_APP_URL,
               description:
                 'Organize your vinyl & music collection, manage a wishlist, and share your personal charts - from current favorites to all-time picks.',
             }),

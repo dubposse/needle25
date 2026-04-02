@@ -1,5 +1,6 @@
 import pool from "@/lib/db";
 import { notFound } from "next/navigation";
+import Head from "next/head";
 
 export async function generateMetadata() {
   return {
@@ -54,67 +55,78 @@ export default async function PublicChartsPage({ params }) {
   }
 
   return (
-    <main
-      style={{
-        background: "#0b0b0b",
-        minHeight: "100vh",
-        color: "#fff",
-        padding: 30,
-      }}
-    >
-      <div style={{ maxWidth: 700, margin: "0 auto" }}>
-        <h1 style={{ fontSize: 28, marginBottom: 10 }}>
-          Needle25
-        </h1>
+    <>
+      <Head>
+        <meta property="og:title" content={`Needle25 – Deine Charts von ${user.username}`} />
+        <meta property="og:description" content="Teile deine Charts mit Freunden!" />
+        <meta property="og:image" content={process.env.NEXT_PUBLIC_APP_URL} />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_APP_URL}/charts/${user.username}`} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Head>
 
-        <p style={{ color: "#888", marginBottom: 30 }}>
-          Charts by <strong>{user.username}</strong>
-        </p>
+      <main
+        style={{
+          background: "#0b0b0b",
+          minHeight: "100vh",
+          color: "#fff",
+          padding: 30,
+        }}
+      >
+        <div style={{ maxWidth: 700, margin: "0 auto" }}>
+          <h1 style={{ fontSize: 28, marginBottom: 10 }}>
+            Needle25
+          </h1>
 
-        {Object.entries(grouped).map(([key, items]) => (
-          <section key={key} style={{ marginBottom: 40 }}>
-            <h2 style={{ fontSize: 18, marginBottom: 12 }}>
-              {CATEGORY_LABELS[key]}
-            </h2>
+          <p style={{ color: "#888", marginBottom: 30 }}>
+            Charts by <strong>{user.username}</strong>
+          </p>
 
-            {items.length === 0 ? (
-              <p style={{ color: "#666" }}>No entries</p>
-            ) : (
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                {items.map((item) => (
-                  <li
-                    key={item.id}
-                    style={{
-                      padding: "12px 0",
-                      borderBottom: "1px solid #222",
-                    }}
-                  >
-                    <div style={{ fontWeight: 600 }}>
-                      {item.artist}
-                    </div>
+          {Object.entries(grouped).map(([key, items]) => (
+            <section key={key} style={{ marginBottom: 40 }}>
+              <h2 style={{ fontSize: 18, marginBottom: 12 }}>
+                {CATEGORY_LABELS[key]}
+              </h2>
 
-                    <div style={{ color: "#aaa", fontSize: 14 }}>
-                      {item.title}
-                    </div>
-
-                    {item.comment && (
-                      <div
-                        style={{
-                          marginTop: 4,
-                          fontSize: 13,
-                          color: "#777",
-                        }}
-                      >
-                        {item.comment}
+              {items.length === 0 ? (
+                <p style={{ color: "#666" }}>No entries</p>
+              ) : (
+                <ul style={{ listStyle: "none", padding: 0 }}>
+                  {items.map((item) => (
+                    <li
+                      key={item.id}
+                      style={{
+                        padding: "12px 0",
+                        borderBottom: "1px solid #222",
+                      }}
+                    >
+                      <div style={{ fontWeight: 600 }}>
+                        {item.artist}
                       </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
-      </div>
-    </main>
+
+                      <div style={{ color: "#aaa", fontSize: 14 }}>
+                        {item.title}
+                      </div>
+
+                      {item.comment && (
+                        <div
+                          style={{
+                            marginTop: 4,
+                            fontSize: 13,
+                            color: "#777",
+                          }}
+                        >
+                          {item.comment}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
+        </div>
+      </main>
+    </>
   );
 }

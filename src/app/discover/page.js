@@ -14,7 +14,11 @@ export default function DiscoverPage() {
     const url = process.env.NEXT_PUBLIC_APP_URL;
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Needle25 - Track your vinyl & music collection", url });
+        await navigator.share({
+          title: "Needle25 - Track your vinyl & music collection",
+          text: "Track your vinyl & music collection with Needle25!", //  das soll jetzt anzuklicken sein 
+          url,
+        });
       } catch {}
     } else {
       await navigator.clipboard.writeText(url);
