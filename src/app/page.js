@@ -21,6 +21,7 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState("collection");
   const [showProfile, setShowProfile] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   async function loadCurrentUser() {
     const res = await fetch("/api/auth/me");
@@ -133,7 +134,32 @@ export default function Home() {
           <div style={{ display: "flex", gap: 20, fontSize: 14, color: "#666" }}>
             <a href="/" style={{ color: "#666" }}>Home</a>
             <a href="/discover" style={{ color: "#666" }}>Discover</a>
+            <button
+              onClick={() => setShowInfo(true)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#666",
+                cursor: "pointer",
+                fontSize: 14,
+                padding: 0,
+                textDecoration: "none",
+              }}
+              type="button"
+            >
+              Info
+            </button>
           </div>
+          {showInfo && (
+            <Modal title="Info" onClose={() => setShowInfo(false)}>
+              <div style={{ fontSize: 15, color: "#ddd", lineHeight: 1.7 }}>
+                <p>
+                  After registration, all your data is private except your charts.<br />
+                  Charts consist of 5x all-time favorites, 5x current favorites, and 15x recommendations.
+                </p>
+              </div>
+            </Modal>
+          )}
         </div>
 
         {!user ? (

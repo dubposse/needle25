@@ -95,25 +95,9 @@ export default function AuthForm({ onLoginSuccess, setMessage }) {
           }}
         >
           Manage a wishlist and share your personal charts. <br />{" "}
-          &nbsp;
-          <img
-            src="/logo.png"
-            alt=""
-            style={{
-              height: 11,
-              width: "auto",
-              opacity: 0.4,
-              verticalAlign: "middle",
-              position: "relative",
-              top: "-2px",
-            }}
-          />
-          &nbsp; From current favorites to all-time picks.
+      From current favorites to all-time picks.
         </p>
-        <p style={{ color: "#888", fontSize: 13, lineHeight: 1.7, margin: 0 }}>
-          All data is private. <br /> Only your curated charts are public by
-          default.
-        </p>
+       
       </div>
 
       <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>
@@ -130,25 +114,21 @@ export default function AuthForm({ onLoginSuccess, setMessage }) {
               marginBottom: showDemoInfo ? 8 : 0,
             }}
           >
-            <p
-              style={{ fontSize: 13, color: "#444", margin: 0, lineHeight: 1.7 }}
-            >
-              Demo Access <br />
-              Email: {process.env.NEXT_PUBLIC_DEMO_EMAIL}
-              <br />
-              Password: {process.env.NEXT_PUBLIC_DEMO_PASSWORD}
-            </p>
+            <span style={{ fontSize: 13, color: "#444", margin: 0, lineHeight: 1.7 }}>
+              Demo Access
+            </span>
             <button
               onClick={() => setShowDemoInfo((v) => !v)}
-              title="Demo features"
+              title="Demo-Zugangsdaten anzeigen"
+              aria-label="Demo-Zugangsdaten anzeigen"
               style={{
                 background: "none",
                 border: "1px solid #444",
                 color: "#888",
                 borderRadius: "50%",
-                width: 16,
-                height: 16,
-                fontSize: 10,
+                width: 18,
+                height: 18,
+                fontSize: 12,
                 cursor: "pointer",
                 padding: 0,
                 lineHeight: 1,
@@ -163,36 +143,27 @@ export default function AuthForm({ onLoginSuccess, setMessage }) {
           {showDemoInfo && (
             <div
               style={{
-                fontSize: 11,
-                color: "#666",
+                fontSize: 13,
+                color: "#ddd",
                 lineHeight: 1.7,
-                padding: "8px 10px",
+                padding: "10px 12px",
                 border: "1px solid #2a2a2a",
                 borderRadius: 6,
-                maxWidth: 300,
+                maxWidth: 320,
+                background: "#181818",
+                marginTop: 6,
               }}
             >
-              <strong
-                style={{ color: "#999", display: "block", marginBottom: 4 }}
-              >
-                Try all features
-              </strong>
-              <ul style={{ margin: 0, paddingLeft: 14 }}>
-                <li>Manage a music collection (vinyl, cd, tape ...)</li>
-                <li>Maintain a wishlist</li>
-                <li>Create charts</li>
-              </ul>
-              <p
-                style={{
-                  margin: "6px 0 0 0",
-                  paddingTop: 6,
-                  borderTop: "1px solid #2a2a2a",
-                }}
-              >
-                Shared demo account – all data is visible and editable by
-                anyone. For your own private collection and saved data,
-                register a free account.
-              </p>
+              <div style={{ marginBottom: 8 }}>
+                <strong style={{ color: "#fff" }}>Test Login:</strong><br />
+                <strong style={{ color: "#fff" }}>Email:</strong> test@needle25<br />
+                <strong style={{ color: "#fff" }}>Password:</strong> secret123
+              </div>
+              <div style={{ fontSize: 12, color: "#aaa" }}>
+                This is a shared test account for demo purposes only.<br />
+                All data entered here is public and will be reset regularly.<br />
+                <span style={{ color: "#fff" }}>To save your own private collection and charts, please register a free account.</span>
+              </div>
             </div>
           )}
         </div>
