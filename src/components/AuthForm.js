@@ -75,28 +75,26 @@ export default function AuthForm({ onLoginSuccess, setMessage }) {
   return (
     <div style={{ flex: 1, overflowY: "auto", paddingBottom: 32 }}>
       <div style={{ marginBottom: 32 }}>
-        <p
+        <div
           style={{
-            color: "#fff",
-            fontSize: 16,
-            fontWeight: 700,
-            lineHeight: 1.4,
-            margin: "0 0 6px 0",
+            border: "1px solid #232323",
+            borderRadius: 12,
+            background: "rgba(24,24,24,0.98)",
+            boxShadow: "0 2px 16px 0 rgba(0,0,0,0.13)",
+            padding: "22px 24px 16px 24px",
+            margin: "0 0 20px 0",
+            maxWidth: 420,
+            color: "#bbb",
+            textAlign: "center",
           }}
         >
-          Organize your vinyl &amp; music collection
-        </p>
-        <p
-          style={{
-            color: "#888",
-            fontSize: 13,
-            lineHeight: 1.7,
-            margin: "0 0 10px 0",
-          }}
-        >
-          Manage a wishlist and share your personal charts. <br />{" "}
-      From current favorites to all-time picks.
-        </p>
+          <div style={{ color: "#fff", fontSize: 19, fontWeight: 700, lineHeight: 1.3, margin: 0, marginBottom: 8, letterSpacing: "-0.5px" }}>
+            Your vinyl & music collection, organized.
+          </div>
+          <div style={{ fontSize: 15, lineHeight: 1.8, color: "#b5b5b5" }}>
+            Made for collectors –<br />track your records and showcase your curated charts.
+          </div>
+        </div>
        
       </div>
 
@@ -155,14 +153,14 @@ export default function AuthForm({ onLoginSuccess, setMessage }) {
               }}
             >
               <div style={{ marginBottom: 8 }}>
-                <strong style={{ color: "#fff" }}>Test Login:</strong><br />
+                <strong style={{ color: "#fff" }}>Public demo account:</strong><br />
                 <strong style={{ color: "#fff" }}>Email:</strong> test@needle25<br />
                 <strong style={{ color: "#fff" }}>Password:</strong> secret123
               </div>
               <div style={{ fontSize: 12, color: "#aaa" }}>
-                This is a shared test account for demo purposes only.<br />
-                All data entered here is public and will be reset regularly.<br />
-                <span style={{ color: "#fff" }}>To save your own private collection and charts, please register a free account.</span>
+            
+                Data resets regularly.<br />
+                <span style={{ color: "#fff" }}>Register a free account to save your collection and progress.</span>
               </div>
             </div>
           )}

@@ -153,10 +153,16 @@ export default function Home() {
           {showInfo && (
             <Modal title="Info" onClose={() => setShowInfo(false)}>
               <div style={{ fontSize: 15, color: "#ddd", lineHeight: 1.7 }}>
-                <p>
-                  After registration, all your data is private except your charts.<br />
-                  Charts consist of 5x all-time favorites, 5x current favorites, and 15x recommendations.
-                </p>
+               
+                  <strong>Privacy Note:</strong> After registration, your collection and wishlist remain private. Only your curated charts are public.<br />
+                  <br />
+                  <span style={{ display: 'block', marginTop: 8 }}>Your Charts include:</span>
+                  <ul style={{ margin: '8px 0 0 18px', padding: 0 }}>
+                    <li>5× All-time favorites</li>
+                    <li>5× Current favorites</li>
+                    <li>15× Personal recommendations</li>
+                  </ul>
+               
               </div>
             </Modal>
           )}
