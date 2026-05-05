@@ -21,9 +21,9 @@ Needle25 is a web app for managing your music collection, wishlist, and personal
 
 https://needle25.vercel.app
 
-## Goal
+## Overview
 
-This project was built to learn full-stack development with a focus on backend systems, authentication, and database design.
+Needle25 was designed and developed as a full-stack application with a focus on structured data handling, authentication, and database integration. The project emphasizes practical functionality and a clear separation between frontend, backend, and data logic.
 
 ## License
 
